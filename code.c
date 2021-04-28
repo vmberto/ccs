@@ -1,5 +1,13 @@
-int x = 1;
+int main() { 
+    int x = 3 + 4;
+    if (x + 1 > 2) {
+        int i = a + b;
+    } else {
+        char b = 'a';
+    }
+    int y = 5 + 88;
 
-int a = 6;
-
-a + b * 50
+    while (x + 1 < 5) {
+        int a = 5 + a;
+    }
+}

@@ -51,12 +51,14 @@ class LexicalAnalysis:
                     self.column = 0
 
             elif (state is 1):
-                if (u.isChar(currentChar) or u.isDigit(currentChar)):
+                if (u.isChar(currentChar) or u.isDigit(currentChar) and currentChar != ';'):
                     term += currentChar
                     state = 1
 
                 elif (term.count('\'') == 2 and term[0] == '\'' and term[2] == '\''):
-                    return Token(Token.TK_CHAR if u.isChar(term[1]) else Token.TK_DIGIT, term, self.line, self.column)
+                    if (not u.isEOF(currentChar)):
+                        self.back()
+                    return Token(Token.TK_CHAR, term, self.line, self.column)
                 
                 elif (term.count('\'') == 0 and (u.isSpace(currentChar) or u.isOperator(currentChar) or u.isEOF(currentChar) or u.isSpecialChar(currentChar))):
                     if (not u.isEOF(currentChar)):
@@ -90,7 +92,7 @@ class LexicalAnalysis:
                 if (u.isOperator(currentChar)):
                     term += currentChar
                     state = 3
-                elif (u.isChar(currentChar) or u.isDigit(currentChar) or u.isSpace(currentChar) or u.isEOF(currentChar)):
+                elif (u.isOperator(currentChar) or u.isChar(currentChar) or u.isDigit(currentChar) or u.isSpace(currentChar) or u.isEOF(currentChar) or currentChar == ';'):
                     if (not u.isEOF(currentChar)):
                         self.back()
                     if (u.isArithmeticOperator(term)):
@@ -98,7 +100,6 @@ class LexicalAnalysis:
                     elif(u.isRelationalOperator(term)):
                         return Token(Token.TK_RELATIONAL_OPERATOR, term, self.line, self.column)
                     else:
-                        term += currentChar
                         raise Exception('Unrecognized OPERATOR: ' + term)
                 else:
                     term += currentChar

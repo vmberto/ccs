@@ -18,7 +18,7 @@ def isArithmeticOperator(char):
     return char in ['+', '-', '*', '/', '=', '++']
 
 def isSpecialChar(char):
-    return char in ['(', ')', '[', ']', ',', ';']
+    return char in ['(', ')', '[', ']', ',', ';', '{', '}']
 
 def isSpace(char):
     return char.isspace()

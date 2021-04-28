@@ -7,31 +7,31 @@ class Token:
     TK_ARITHMETIC_OPERATOR = 5
     TK_RELATIONAL_OPERATOR = 6
     TK_CHAR = 7
-    TK_DIGIT = 8
 
     def __init__(self, tokenType, text, line, column):
         self.type = tokenType
         self.text = text
         self.line = line
         self.column = column
+    
+    def getType(self):
+        if (self.type is self.TK_IDENTIFIER):
+            tokenType = 'Identificador'
+        if (self.type is self.TK_SPECIAL_CHAR):
+            tokenType = 'Caractere Especial'
+        if (self.type is self.TK_RESERVED_WORD):
+            tokenType = 'Palavra Reservada'
+        elif (self.type is self.TK_INT):
+            tokenType = 'Inteiro'
+        elif (self.type is self.TK_FLOAT):
+            tokenType = 'Float'
+        elif (self.type is self.TK_ARITHMETIC_OPERATOR):
+            tokenType = 'Operador Aritmético'
+        elif (self.type is self.TK_RELATIONAL_OPERATOR):
+            tokenType = 'Operador Relacional'
+        elif (self.type is self.TK_CHAR):
+            tokenType = 'Char'
+        return tokenType
 
     def __repr__(self):
-        if (self.type is 0):
-            tokenType = 'Identificador'
-        if (self.type is 1):
-            tokenType = 'Caractere Especial'
-        if (self.type is 2):
-            tokenType = 'Palavra Reservada'
-        elif (self.type is 3):
-            tokenType = 'Inteiro'
-        elif (self.type is 4):
-            tokenType = 'Float'
-        elif (self.type is 5):
-            tokenType = 'Operador Aritmético'
-        elif (self.type is 6):
-            tokenType = 'Operador Relacional'
-        elif (self.type is 7):
-            tokenType = 'Char'
-        elif (self.type is 8):
-            tokenType = 'Dígito' 
-        return 'Token [Tipo: ' + tokenType + ' | Texto: ' + self.text + ' | Linha: ' + str(self.line) + ' | Coluna: ' + str(self.column) + ']'
+        return 'Token [Tipo: ' + self.getType() + ' | Texto: ' + self.text + ' | Linha: ' + str(self.line) + ' | Coluna: ' + str(self.column) + ']'
