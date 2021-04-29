@@ -1,5 +1,6 @@
 import utils as u
 from token_model import Token
+from syntax_exception import SyntaxException
 
 class Parser:
 
@@ -48,7 +49,6 @@ class BlockScopeParser:
             attp = AttributionParser(self.box)
             cep = ConditionalExpressionParser(self.box)
             lp = LoopParser(self.box)
-            # o cep precisa ficar acima, pois a verificação por ELSE no final avança um token
             if (cep.checkTokenCompatibility()):
                 cep.execute()
             if (lp.checkTokenCompatibility()):
@@ -56,16 +56,16 @@ class BlockScopeParser:
             if (attp.checkTokenCompatibility()):
                 attp.execute()
             if (self.box['token'].type != Token.TK_SPECIAL_CHAR):
-                raise Exception('syntax error: unexpected token, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+                raise SyntaxException('unexpected token', self.box['token'])
 
         self.box['token'] = self.box['scanner'].nextToken()
         if (not mainExecution and not self.box['token']):
-            raise Exception('syntax error: unexpected end of file!')
+            raise SyntaxException('unexpected end of file', self.box['token'])
 
     def expectOpeningCurlyBracket(self):
         self.box['token'] = self.box['scanner'].nextToken()
         if (self.box['token'].text != '{'):
-            raise Exception('opening curly braces Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('opening curly braces Expected', self.box['token'])
 
     def expectClosingCurlyBracket(self):
         return self.box['token'].text is '}'
@@ -93,16 +93,13 @@ class ArithmeticParser:
     def expectNumberOrIdentifier(self):
         self.box['token'] = self.box['scanner'].nextToken()
         if (self.typeDeclaration == 'int' and self.box['token'].type == Token.TK_FLOAT):
-            raise Exception('int value Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('int value Expected', self.box['token'])
         if (self.box['token'].type != Token.TK_IDENTIFIER and self.box['token'].type != Token.TK_INT and self.box['token'].type != Token.TK_FLOAT and self.box['token'].type != Token.TK_CHAR):
-            raise Exception('identifier or number Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('identifier or number Expected', self.box['token'])
     
     def expectArithmeticOperator(self):
         if (self.box['token'].type != Token.TK_ARITHMETIC_OPERATOR):
-            raise Exception('operator Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
-
-    def expectSemicolon(self):
-        return (self.box['token'].text == ';')
+            raise SyntaxException('operator Expected', self.box['token'])
 
     def checkTokenCompatibility(self):
         return self.box['token'].type is Token.TK_IDENTIFIER or self.box['token'].type is Token.TK_INT or self.box['token'].type is Token.TK_FLOAT or self.box['token'].type is Token.TK_ARITHMETIC_OPERATOR
@@ -129,41 +126,26 @@ class AttributionParser:
 
     def expectVariableTypeDeclaration(self):
         if (not self.checkTokenCompatibility()):
-            raise Exception('type Declaration Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('type Declaration Expected', self.box['token'])
         else:
             self.typeDeclaration = self.box['token'].text 
 
     def expectIdentifier(self):
         self.box['token'] = self.box['scanner'].nextToken()
         if (self.box['token'].type != Token.TK_IDENTIFIER):
-            raise Exception('identifier Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('identifier Expected', self.box['token'])
 
     def expectAttributionOperator(self):
         self.box['token'] = self.box['scanner'].nextToken()
         if (self.box['token'].text != '='):
-            raise Exception('attribution operator Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
-
-    def expectIntValue(self):
-        self.box['token'] = self.box['scanner'].nextToken()
-        if (self.box['token'].type != Token.TK_INT):
-            raise Exception('int value Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
-    
-    def expectFloatValue(self):
-        self.box['token'] = self.box['scanner'].nextToken()
-        if (self.box['token'].type != Token.TK_FLOAT and self.box['token'].type != Token.TK_INT):
-            raise Exception('float value Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
-
-    def expectCharValue(self):
-        self.box['token'] = self.box['scanner'].nextToken()
-        if (self.box['token'].type != Token.TK_CHAR):
-            raise Exception('char value Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('attribution operator Expected', self.box['token'])
 
     def expectSemicolonOrComma(self):
         if (self.box['token'].text != ';' and self.box['token'].text != ','):
-            raise Exception('semicolon or comma Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('semicolon or comma Expected', self.box['token'])
 
     def checkTokenCompatibility(self):
-        return self.box['token'].type is Token.TK_RESERVED_WORD and (self.box['token'].text == 'int' or self.box['token'].text == 'float' or self.box['token'].text == 'char')
+        return (self.box['token'].text == 'int' or self.box['token'].text == 'float' or self.box['token'].text == 'char')
 
 class ConditionalOperationParser:
 
@@ -178,7 +160,7 @@ class ConditionalOperationParser:
 
     def expectRelationalOperator(self):
         if (self.box['token'].type != Token.TK_RELATIONAL_OPERATOR):
-            raise Exception('relational operator Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('relational operator Expected', self.box['token'])
 
     def expectSemicolon(self):
         return (self.box['token'].text == ';')
@@ -204,7 +186,7 @@ class ConditionalExpressionParser:
 
     def expectIf(self):
         if (not self.checkTokenCompatibility()):
-            raise Exception('if Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('if Expected', self.box['token'])
 
     def elseExists(self):
         return self.box['token'].text == 'else'
@@ -212,11 +194,11 @@ class ConditionalExpressionParser:
     def expectOpeningParenthesis(self):
         self.box['token'] = self.box['scanner'].nextToken()
         if (self.box['token'].text != '('):
-            raise Exception('opening Parenthesis Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('opening Parenthesis Expected', self.box['token'])
 
     def expectClosingParenthesis(self):
         if (self.box['token'].text != ')'):
-            raise Exception('closing Parenthesis Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('closing Parenthesis Expected', self.box['token'])
 
     def checkTokenCompatibility(self):
         return self.box['token'].type is Token.TK_RESERVED_WORD and self.box['token'].text == 'if'
@@ -239,16 +221,16 @@ class LoopParser:
 
     def expectWhile(self):
         if (not self.checkTokenCompatibility()):
-            raise Exception('if Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('if Expected', self.box['token'])
 
     def expectOpeningParenthesis(self):
         self.box['token'] = self.box['scanner'].nextToken()
         if (self.box['token'].text != '('):
-            raise Exception('opening Parenthesis Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('opening Parenthesis Expected', self.box['token'])
 
     def expectClosingParenthesis(self):
         if (self.box['token'].text != ')'):
-            raise Exception('closing Parenthesis Expected!, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
+            raise SyntaxException('closing Parenthesis Expected', self.box['token'])
 
     def checkTokenCompatibility(self):
         return self.box['token'].type is Token.TK_RESERVED_WORD and self.box['token'].text == 'while'
