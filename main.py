@@ -22,7 +22,7 @@ def main():
     print('\n-------- Syntax --------')
     try:
         parser.execute()
-        print('Compilado com sucesso')
+        print('Successfully Parsed')
     except Exception as e:
         print(e)
 

@@ -16,22 +16,22 @@ class Token:
     
     def getType(self):
         if (self.type is self.TK_IDENTIFIER):
-            tokenType = 'Identificador'
+            tokenType = 'Identifier'
         if (self.type is self.TK_SPECIAL_CHAR):
-            tokenType = 'Caractere Especial'
+            tokenType = 'Special Character'
         if (self.type is self.TK_RESERVED_WORD):
-            tokenType = 'Palavra Reservada'
+            tokenType = 'Reserved Word'
         elif (self.type is self.TK_INT):
-            tokenType = 'Inteiro'
+            tokenType = 'Integer'
         elif (self.type is self.TK_FLOAT):
             tokenType = 'Float'
         elif (self.type is self.TK_ARITHMETIC_OPERATOR):
-            tokenType = 'Operador Aritmético'
+            tokenType = 'Arithmetic Operator'
         elif (self.type is self.TK_RELATIONAL_OPERATOR):
-            tokenType = 'Operador Relacional'
+            tokenType = 'Relational Operator'
         elif (self.type is self.TK_CHAR):
             tokenType = 'Char'
         return tokenType
 
     def __repr__(self):
-        return 'Token [Tipo: ' + self.getType() + ' | Texto: ' + self.text + ' | Linha: ' + str(self.line) + ' | Coluna: ' + str(self.column) + ']'
+        return 'Token [Type: ' + self.getType() + ' | Text: ' + self.text + ' | Line: ' + str(self.line) + ' | Column: ' + str(self.column) + ']'
