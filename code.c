@@ -1,9 +1,9 @@
 int main() { 
     int x = 3 + 4;
-    if (x + 1 > 2) {
+    if (x + 1 == 2) {
         int i = a + b;
     } else {
-        char b = 'a';
+
     }
     int y = 5 + 88;
 

@@ -55,10 +55,12 @@ class BlockScopeParser:
                 lp.execute()
             if (attp.checkTokenCompatibility()):
                 attp.execute()
+            if (self.box['token'].type != Token.TK_SPECIAL_CHAR):
+                raise Exception('syntax error: unexpected token, found ' + self.box['token'].getType() + ' ( ' + self.box['token'].text + ' ) at LINE ' + str(self.box['token'].line) + ' and COLUMN ' + str(self.box['token'].column))
 
         self.box['token'] = self.box['scanner'].nextToken()
         if (not mainExecution and not self.box['token']):
-            raise Exception('syntax error, unexpected end of file!')
+            raise Exception('syntax error: unexpected end of file!')
 
     def expectOpeningCurlyBracket(self):
         self.box['token'] = self.box['scanner'].nextToken()

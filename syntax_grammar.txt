@@ -1,25 +1,30 @@
-<programa>      ::= int main"("")" <bloco>
-<bloco>         ::= “{“ {<decl_var>}* {<comando>}* “}”
-<comando>       ::= <atribuição>
+<programa>        ::= int main"("")" <bloco>
+
+<bloco>           ::= “{“ {<decl_var>}* {<comando>}* “}”
+
+<comando>         ::= <atribuição>
                     | <iteração>
                     | if "("<expr_relacional>")" <comando> {else <comando>}?
-<atribuição> ::= <id> "=" <expr_arit> ";"
-<iteração> ::= while "("<expr_relacional>")" <comando>
+                    
+<atribuição>      ::= <id> "=" <expr_arit> ";"
+
+<iteração>        ::= while "("<expr_relacional>")" <comando>
+
 <expr_relacional> ::= <expr_arit> <op_relacional> <expr_arit>
 
+<expr_arit>       ::= <expr_arit> "+" <termo>
+                    | <expr_arit> "-" <termo>
+                    | <termo>
 
-<expr_arit> ::= <expr_arit> "+" <termo>
-| <expr_arit> "-" <termo>
-| <termo>
-<termo> ::= <termo> "*" <fator>
-| <termo> “/” <fator>
+<termo>           ::= <termo> "*" <fator>
+                    | <termo> “/” <fator>
+                    | <fator>
 
-| <fator>
-<fator> ::= “(“ <expr_arit> “)”
-| <id>
-| <float>
-| <inteiro>
-| <char>
+<fator>           ::= “(“ <expr_arit> “)”
+                        | <id>
+                        | <float>
+                        | <inteiro>
+                        | <char>
 
 
 
