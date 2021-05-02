@@ -109,7 +109,7 @@ class ArithmeticParser:
             raise SyntaxException('operator Expected', self.box['token'])
 
     def checkTokenCompatibility(self):
-        return self.box['token'].type is Token.TK_IDENTIFIER or self.box['token'].type is Token.TK_INT or self.box['token'].type is Token.TK_FLOAT or self.box['token'].type is Token.TK_ARITHMETIC_OPERATOR
+        return self.box['token'].type is Token.TK_IDENTIFIER or self.box['token'].type is Token.TK_INT or self.box['token'].type is Token.TK_FLOAT or (self.box['token'].type is Token.TK_ARITHMETIC_OPERATOR and self.box['token'].text != '=')
 
 
 class DeclarationParser:

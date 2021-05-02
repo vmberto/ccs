@@ -95,7 +95,9 @@ class LexicalAnalysis:
                 elif (u.isOperator(currentChar) or u.isChar(currentChar) or u.isDigit(currentChar) or u.isSpace(currentChar) or u.isEOF(currentChar) or currentChar == ';'):
                     if (not u.isEOF(currentChar)):
                         self.back()
-                    if (u.isArithmeticOperator(term)):
+                    if (u.isAssignmentOperator(term)):
+                        return Token(Token.TK_ASSIGNMENT_OPERATOR, term, self.line, self.column)
+                    elif (u.isArithmeticOperator(term)):
                         return Token(Token.TK_ARITHMETIC_OPERATOR, term, self.line, self.column)
                     elif(u.isRelationalOperator(term)):
                         return Token(Token.TK_RELATIONAL_OPERATOR, term, self.line, self.column)

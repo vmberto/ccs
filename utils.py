@@ -17,6 +17,9 @@ def isRelationalOperator(char):
 def isArithmeticOperator(char):
     return char in ['+', '-', '*', '/', '=', '++']
 
+def isAssignmentOperator(char):
+    return char == '='
+
 def isSpecialChar(char):
     return char in ['(', ')', '[', ']', ',', ';', '{', '}']
 
