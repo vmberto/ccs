@@ -9,13 +9,19 @@ def isChar(char):
     return bool(re.match(pattern, char))
 
 def isOperator(char):
-    return isRelationalOperator(char) or isArithmeticOperator(char)
+    return isRelationalOperator(char) or isArithmeticOperator(char) or isConditionalOperator(char)
+
+def isExclamationMark(char):
+    return char == '!'
 
 def isRelationalOperator(char):
     return char in ['<', '>', '<=', '>=', '==', '!=']
 
+def isConditionalOperator(char):
+    return char in ['&', '&&', '|', '||']
+
 def isArithmeticOperator(char):
-    return char in ['+', '-', '*', '/', '=', '++']
+    return char in ['+', '-', '*', '/', '=', '++', '--']
 
 def isAssignmentOperator(char):
     return char == '='

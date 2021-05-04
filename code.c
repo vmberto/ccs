@@ -1,13 +1,20 @@
 int main() { 
 
-    int b = 0;
-    int x = 15;
+    int a, b, c = 80;
 
-    if (b == x {
-        b = b + 1;
+    a = 50, b = 100;
+
+    if (a < b) {
+        c = 20;
+    } else {
+        c = c + 10;
     }
 
+    float c = 50;
 
+    while (a < b) {
+        a = a + 1;
+    }
 }
 
 

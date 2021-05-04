@@ -7,7 +7,8 @@ class Token:
     TK_ARITHMETIC_OPERATOR = 5
     TK_RELATIONAL_OPERATOR = 6
     TK_ASSIGNMENT_OPERATOR = 7
-    TK_CHAR = 8
+    TK_CONDITIONAL_OPERATOR = 8
+    TK_CHAR = 9
 
     def __init__(self, tokenType, text, line, column):
         self.type = tokenType
@@ -32,6 +33,8 @@ class Token:
             tokenType = 'Relational Operator'
         elif (self.type is self.TK_ASSIGNMENT_OPERATOR):
             tokenType = 'Assignment Operator'
+        elif (self.type is self.TK_CONDITIONAL_OPERATOR):
+            tokenType = 'Conditional Operator'
         elif (self.type is self.TK_CHAR):
             tokenType = 'Char'
         return tokenType

@@ -1,5 +1,6 @@
 import utils as u
 from token_model import Token
+from lexical_exception import LexicalException
 
 class LexicalAnalysis:
 
@@ -36,7 +37,7 @@ class LexicalAnalysis:
                 elif (u.isDigit(currentChar)):
                     state = 2
                     term += currentChar
-                elif (u.isOperator(currentChar)):
+                elif (u.isOperator(currentChar) or u.isExclamationMark(currentChar)):
                     term += currentChar
                     state = 3
                 elif (u.isSpace(currentChar)):
@@ -44,7 +45,7 @@ class LexicalAnalysis:
                 elif (u.isEOF(currentChar)):
                     break
                 else:
-                    raise Exception('Unrecognized SYMBOL: ' + term)
+                    raise LexicalException('unrecognized SYMBOL [ ' + currentChar + ' ]')
 
                 if (u.countLine(currentChar)):
                     self.line += 1
@@ -70,13 +71,12 @@ class LexicalAnalysis:
                         return Token(Token.TK_IDENTIFIER, term, self.line, self.column)
                 else:
                     term += currentChar
-                    raise Exception('Malformed Identifier: ' + term)
+                    raise LexicalException('Malformed Identifier [ ' + term + ' ] ')
 
             elif (state is 2):
                 if (u.isDigit(currentChar) or u.isChar(currentChar) or currentChar is '.'):
                     term += currentChar
                     state = 2
-
                 elif ((not u.isChar(currentChar) or u.isEOF(currentChar)) and u.isFloatOrInt(term)):
                     if (not u.isEOF(currentChar)):
                         self.back()
@@ -86,7 +86,7 @@ class LexicalAnalysis:
                         return Token(Token.TK_INT, term, self.line, self.column)
                 else:
                     term += currentChar
-                    raise Exception('Unrecognized NUMBER: ' + term)
+                    raise LexicalException('unrecognized NUMBER [ ' + term + ' ] ')
 
             elif (state is 3):
                 if (u.isOperator(currentChar)):
@@ -97,15 +97,17 @@ class LexicalAnalysis:
                         self.back()
                     if (u.isAssignmentOperator(term)):
                         return Token(Token.TK_ASSIGNMENT_OPERATOR, term, self.line, self.column)
+                    elif (u.isConditionalOperator(term)):
+                        return Token(Token.TK_CONDITIONAL_OPERATOR, term, self.line, self.column)
                     elif (u.isArithmeticOperator(term)):
                         return Token(Token.TK_ARITHMETIC_OPERATOR, term, self.line, self.column)
                     elif(u.isRelationalOperator(term)):
                         return Token(Token.TK_RELATIONAL_OPERATOR, term, self.line, self.column)
                     else:
-                        raise Exception('Unrecognized OPERATOR: ' + term)
+                        raise LexicalException('unrecognized OPERATOR [ ' + term + ' ] ')
                 else:
                     term += currentChar
-                    raise Exception('Unrecognized OPERATOR: ' + term)
+                    raise LexicalException('unrecognized OPERATOR [ ' + term + ' ] ')
         return None
 
     def back(self):
