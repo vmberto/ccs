@@ -11,7 +11,7 @@ def main():
     while True:
         try:
             token = al.nextToken()
-
+            
             if (token == None):
                 break
             else:

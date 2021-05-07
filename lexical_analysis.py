@@ -114,14 +114,12 @@ class LexicalAnalysis:
         self.column -= 1
         self.pos -= 1
 
-
     def nextChar(self):
         if (self.isEOF()):
             return '\0'
         char = self.content[self.pos]
         self.pos += 1
         return char
-
 
     def isEOF(self):
         return self.pos == len(self.content)

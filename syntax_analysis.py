@@ -63,9 +63,13 @@ class BlockScopeParser:
             if (self.box['token'].type != Token.TK_SPECIAL_CHAR):
                 raise SyntaxException('unexpected token', self.box['token'])
 
+        # Esse next token abaixo faz com que o BlockScopeParser acabe um token a frente de seu
+        # fechamento de chaves, e entao, buga ao tentar ler os tokens seguintes
         self.box['token'] = self.box['scanner'].nextToken()
         if (not mainExecution and not self.box['token']):
             raise SyntaxException('unexpected end of file', self.box['token'])
+        # adicionar um metodo para voltar para a chaves apos a checagem do fechamento
+        # --->>> self.box['scanner'].back()
 
     def expectOpeningCurlyBracket(self):
         self.box['token'] = self.box['scanner'].nextToken()
@@ -263,7 +267,6 @@ class NestedConditionalOperationParser:
         cop = ConditionalOperationParser(self.box)
         self.expectOpeningParenthesis()
         cop.execute()
-
         self.expectClosingParenthesis()
 
     def expectOpeningParenthesis(self):
