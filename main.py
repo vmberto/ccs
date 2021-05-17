@@ -1,32 +1,27 @@
-from lexical_analysis import LexicalAnalysis 
-from syntax_analysis import Parser 
+import sys
+from lexical.lexical_analysis import LexicalAnalysis 
+from syntax.syntax_analysis import SyntaxAnalysis 
 
 def main():
-    al = LexicalAnalysis()
+    (code_name, code_content) = readCode()
+    al = LexicalAnalysis(code_name, code_content)
+    sa = SyntaxAnalysis(al)
 
-    alL = LexicalAnalysis()
-    parser = Parser(alL)
 
-    print('-------- Lex --------')
-    while True:
-        try:
-            token = al.nextToken()
-            
-            if (token == None):
-                break
-            else:
-                print(token)
-        except Exception as e:
-            print(e)
-    
     print('\n-------- Syntax --------')
-    try:
-        parser.execute()
-        print('Successfully Parsed')
-    except Exception as e:
-        print(e)
+    sa.execute()
+    print('Successfully Parsed')
 
-    print()
+
+def readCode():
+    code = ''
+    code_name = 'code.c'
+    try:
+        code_name = sys.argv[1]
+        code = open(code_name, "r").read()
+    except Exception as e:
+        code = open(code_name, "r").read()
+    return [code_name, list(code)]
     
 if (__name__ == '__main__'):
     main()

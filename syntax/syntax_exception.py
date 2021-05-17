@@ -1,5 +1,5 @@
 class SyntaxException(Exception):
-    def __init__(self, msg, token):
+    def __init__(self, msg, token = None):
         if (token):
             Exception.__init__(self, 
                 'Syntax Error: ' + msg  

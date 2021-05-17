@@ -130,3 +130,7 @@ dmypy.json
 
 # vscode
 .vscode
+
+# custom
+output/*
+!output/.gitkeep

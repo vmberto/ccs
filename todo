@@ -1,0 +1,11 @@
+- Unificar o Assignment e Declaration modules da analise sintatica
+
+    a = 50, b = 50, c;
+
+    int a = 50, b = 50, c;
+
+ambos acima devem ser validos.
+
+- Fazer o analisador sintatico consumir o utils.py
+
+- Fazer com que o lexico ignore linhas com // (comentario)

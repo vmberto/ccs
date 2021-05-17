@@ -1,29 +1,44 @@
 import utils as u
-from token_model import Token
-from lexical_exception import LexicalException
+import sys
+import os
+from lexical.token_model import Token
+from lexical.lexical_exception import LexicalException
 
 class LexicalAnalysis:
 
-    def __init__(self):
+    def __init__(self, code_name, code_content, output = True):
+        if not os.path.exists('output'):
+            os.makedirs('output')
         self.line = 1
-        self.pos = 0
         self.column = 0
-        try:
-            txtContent = open('code.c', 'r').read()
-            self.content = list(txtContent)
-        except Exception as e:
-            print(e)
-            self.content = ''
+        self.position = 0
+        self.code_content = code_content
+        self.tokens = []
+        if (output):
+            text_file = open("output/" + code_name + "_lex_tokens" , "w")
+        while True:
+            try:
+                token = self.saveNextToken()
+                
+                if (token == None):
+                    self.position = 0
+                    break
+                else:
+                    if (output):
+                        text_file.write(token.__repr__() + '\n')
+                    self.tokens.append(token)
+            except Exception as e:
+                text_file.write(e.__str__() + '\n')
+        if (output):
+            text_file.close()
 
-    
-    def nextToken(self):
+    def saveNextToken(self):
         if (self.isEOF()):
             return None
 
         term = ''
         state = 0
-        token = None
-        while (token == None):
+        while (True):
             currentChar = self.nextChar()
             self.column += 1
 
@@ -112,14 +127,30 @@ class LexicalAnalysis:
 
     def back(self):
         self.column -= 1
-        self.pos -= 1
+        self.position -= 1
 
     def nextChar(self):
         if (self.isEOF()):
             return '\0'
-        char = self.content[self.pos]
-        self.pos += 1
+        char = self.code_content[self.position]
+        self.position += 1
         return char
 
     def isEOF(self):
-        return self.pos == len(self.content)
+        return self.position == len(self.code_content)
+
+    def getTokens(self):
+        return self.tokens
+
+    def getNextToken(self):
+        if (len(self.tokens) == self.position):
+            return None
+        token = self.tokens[self.position]
+        self.position += 1
+        return token
+
+    def getPreviousToken(self):
+        self.position -= 2
+        token = self.tokens[self.position]
+        self.position += 1
+        return token

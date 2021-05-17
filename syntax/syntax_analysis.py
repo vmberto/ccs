@@ -1,9 +1,8 @@
 import utils as u
-from token_model import Token
-from syntax_exception import SyntaxException
+from lexical.token_model import Token
+from syntax.syntax_exception import SyntaxException
 
-
-class Parser:
+class SyntaxAnalysis:
 
     def __init__(self, scanner):
         self.box = {
@@ -19,22 +18,22 @@ class Parser:
         BlockScopeParser(self.box).execute(mainExecution=True)
 
     def expectIntDeclaration(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != 'int'):
             raise SyntaxException('type declaration for main identifier Expected', self.box['token'])
 
     def expectMainDeclaration(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != 'main'):
             raise SyntaxException('main identifier Expected', self.box['token'])
 
     def expectOpeningParenthesis(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != '('):
             raise SyntaxException('opening parentheesis Expected!')
 
     def expectClosingParenthesis(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != ')'):
             raise SyntaxException('closing parenthesis Expected!')
 
@@ -51,28 +50,28 @@ class BlockScopeParser:
     def execute(self, mainExecution=False):
         self.expectOpeningCurlyBracket()
         while(not self.expectClosingCurlyBracket()):
-            self.box['token'] = self.box['scanner'].nextToken()
-            if (self.lp.checkTokenCompatibility()):
-                self.lp.execute()
+            if (self.box['token'] == None):
+                raise SyntaxException('unexpected end of file')
             if (self.attp.checkTokenCompatibility()):
                 self.attp.execute()
-            if (self.cep.checkTokenCompatibility()):
-                self.cep.execute()
             if (self.decp.checkTokenCompatibility()):
                 self.decp.execute()
+            if (self.lp.checkTokenCompatibility()):
+                self.lp.execute()
+            if (self.cep.checkTokenCompatibility()):
+                self.cep.execute()
             if (self.box['token'].type != Token.TK_SPECIAL_CHAR):
                 raise SyntaxException('unexpected token', self.box['token'])
+            self.box['token'] = self.box['scanner'].getNextToken()
 
-        # Esse next token abaixo faz com que o BlockScopeParser acabe um token a frente de seu
-        # fechamento de chaves, e entao, buga ao tentar ler os tokens seguintes
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (not mainExecution and not self.box['token']):
-            raise SyntaxException('unexpected end of file', self.box['token'])
-        # adicionar um metodo para voltar para a chaves apos a checagem do fechamento
-        # --->>> self.box['scanner'].back()
+            raise SyntaxException('unexpected end of file')
+        self.box['token'] = self.box['scanner'].getPreviousToken()
+
 
     def expectOpeningCurlyBracket(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != '{'):
             raise SyntaxException(
                 'opening curly braces Expected', self.box['token'])
@@ -88,12 +87,12 @@ class ArithmeticParser:
         self.asubexpp = ArithmeticSubExpressionParser(self.box)
 
     def execute(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.asubexpp.checkTokenCompatibility()):
             self.asubexpp.execute()
         else:
             if (self.checkIfAutoOperator()):
-                self.box['token'] = self.box['scanner'].nextToken()
+                self.box['token'] = self.box['scanner'].getNextToken()
                 self.expectIdentifier()
                 self.analyzingAutoIncrementOperation = True
             else:
@@ -102,22 +101,22 @@ class ArithmeticParser:
 
     def executeL(self):
         previousToken = self.box['token']
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
 
         if (self.checkIfAutoOperator()):
             self.validateIfCurrentAutoOperation()
             self.expectIdentifier(previousToken)
-            self.box['token'] = self.box['scanner'].nextToken()
+            self.box['token'] = self.box['scanner'].getNextToken()
 
         if (self.box['token'] != None and (self.checkTokenCompatibility())):
             self.expectArithmeticOperator() 
             self.analyzingAutoIncrementOperation = False
-            self.box['token'] = self.box['scanner'].nextToken()
+            self.box['token'] = self.box['scanner'].getNextToken()
             if (self.asubexpp.checkTokenCompatibility()):
                 self.asubexpp.execute()
             else:
                 if (self.checkIfAutoOperator()):
-                    self.box['token'] = self.box['scanner'].nextToken()
+                    self.box['token'] = self.box['scanner'].getNextToken()
                     self.expectIdentifier()
                     self.analyzingAutoIncrementOperation = True
                 else:
@@ -173,16 +172,23 @@ class DeclarationParser:
 
     def __init__(self, box):
         self.box = box
+        self.ap = ArithmeticParser(self.box)
 
     def execute(self, reexecution=False):
         if (not reexecution):
             self.expectVariableTypeDeclaration()
         self.expectIdentifier()
         self.expectNextAttrOperatorOrSemicolonOrComma()
+
         if (self.isAttributionOperator()):
-            ap = ArithmeticParser(self.box)
-            ap.execute()
-        elif (self.isComma()):
+            self.ap.execute()
+            self.expectSemicolonOrComma()
+            self.checkCommaAndExecute()
+        else:
+            self.checkCommaAndExecute()
+
+    def checkCommaAndExecute(self):
+        if (self.isComma()):
             self.execute(reexecution=True)
 
     def expectVariableTypeDeclaration(self):
@@ -191,19 +197,23 @@ class DeclarationParser:
                 'type Declaration Expected', self.box['token'])
 
     def expectIdentifier(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].type != Token.TK_IDENTIFIER):
             raise SyntaxException('identifier Expected', self.box['token'])
 
     def expectNextAttrOperatorOrSemicolonOrComma(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (not self.isAttributionOperator() and not self.isComma() and not self.isSemicolon()):
-            raise SyntaxException('attribution operator Expected', self.box['token'])
+            raise SyntaxException('attribution operator, semicolon or comma Expected', self.box['token'])
 
     def expectCurrentAttrOperatorOrSemicolonOrComma(self):
         if (not self.isAttributionOperator() and not self.isComma() and not self.isSemicolon()):
             raise SyntaxException('attribution operator, semicolon or comma Expected', self.box['token'])
     
+    def expectSemicolonOrComma(self):
+        if (not self.isComma() and not self.isSemicolon()):
+            raise SyntaxException('semicolon or comma Expected', self.box['token'])
+
     def isComma(self):
         return self.box['token'].text == ','
 
@@ -243,13 +253,13 @@ class ConditionalOperationParser:
         self.ap = ArithmeticParser(self.box)
         self.ncop = NestedConditionalOperationParser(self.box)
 
-    def execute(self, reexecution = False):
+    def execute(self):
         self.ap.execute()
         self.expectRelationalOperator()
         self.ap.execute()
 
         if (self.box['token'].type == Token.TK_CONDITIONAL_OPERATOR):
-            self.execute(reexecution = True)
+            self.execute()
 
     def expectRelationalOperator(self):
         if (self.box['token'].type != Token.TK_RELATIONAL_OPERATOR):
@@ -285,7 +295,7 @@ class ConditionalExpressionParser:
     def __init__(self, box):
         self.box = box
 
-    def execute(self, reexecution = False):
+    def execute(self):
         self.expectIf()
         self.expectOpeningParenthesis()
 
@@ -295,9 +305,11 @@ class ConditionalExpressionParser:
         self.expectClosingParenthesis()
 
         BlockScopeParser(self.box).execute()
-
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.elseExists()):
             BlockScopeParser(self.box).execute()
+        else:
+            self.box['token'] = self.box['scanner'].getPreviousToken()
 
     def expectIf(self):
         if (not self.checkTokenCompatibility()):
@@ -307,7 +319,7 @@ class ConditionalExpressionParser:
         return self.box['token'].text == 'else'
             
     def expectOpeningParenthesis(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != '('):
             raise SyntaxException('opening Parenthesis Expected', self.box['token'])
 
@@ -323,7 +335,7 @@ class LoopParser:
     def __init__(self, box):
         self.box = box
 
-    def execute(self, reexecution = False):
+    def execute(self):
         self.expectWhile()
         self.expectOpeningParenthesis()
 
@@ -339,7 +351,7 @@ class LoopParser:
             raise SyntaxException('if Expected', self.box['token'])
 
     def expectOpeningParenthesis(self):
-        self.box['token'] = self.box['scanner'].nextToken()
+        self.box['token'] = self.box['scanner'].getNextToken()
         if (self.box['token'].text != '('):
             raise SyntaxException('opening Parenthesis Expected', self.box['token'])
 
