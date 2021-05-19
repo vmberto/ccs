@@ -9,3 +9,7 @@ ambos acima devem ser validos.
 - Fazer o analisador sintatico consumir o utils.py
 
 - Fazer com que o lexico ignore linhas com // (comentario)
+
+- Não há suporte para condicoes aninhado
+
+- Não há suporte para auto operators (++ e --)

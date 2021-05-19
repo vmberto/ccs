@@ -9,9 +9,6 @@ def readCode(file):
     code.close()
     return code_content
 
-def includes(string, substring):
-    return string.find(substring) > -1
-
 class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
     def test_should_pass_all_declaration_assignment_arithmetic_cases(self):

@@ -6,8 +6,7 @@ def main():
     (code_name, code_content) = readCode()
     al = LexicalAnalysis(code_name, code_content)
     sa = SyntaxAnalysis(al)
-
-
+    
     print('\n-------- Syntax --------')
     sa.execute()
     print('Successfully Parsed')
