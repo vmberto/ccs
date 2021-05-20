@@ -12,9 +12,40 @@ def readCode(file):
 class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
     def test_should_pass_all_declaration_assignment_arithmetic_cases(self):
-        code_name = 'tests/tests_code/declaration_assignment_arithmetic.c'
-        code_content = readCode(code_name)
-        al = LexicalAnalysis(code_name, code_content, output=False)
+        code_content = list("""
+            int main() {
+
+                int a = 1, b = 1, c = 1;
+
+                int d = 1, e = 1, f;
+                
+                int g = 1, h, i;
+
+                int j, k, l;
+
+                float m = 1.5, n = 1;
+
+                char o = 'a';
+
+                a = 1, b = 1, c = 1;
+
+                d = 1, e = 1, f;
+                
+                g = 1, h, i;
+
+                o = 'a';
+
+                a = ((1) + (1) - ((1 - 1) * 1));
+
+                b = ((1 + a) + (1 + a) - ((1 - (a - 1)) * 1));
+
+                c = (1 + 1 + a + b) / (a + b);
+
+                d = (5 + 5 + (a * b)) / 2;
+
+            }
+        """)
+        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:

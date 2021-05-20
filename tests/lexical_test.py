@@ -13,11 +13,19 @@ def readCode(file):
 class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
 
     def test_lexical_errors(self):
-        code_name = 'tests/tests_code/lexical.c'
-        code_content = readCode(code_name)
+        code_content = list("""
+            #
+
+            ===
+
+            =%
+
+            123a
+
+        """)
         is_valid = True
     
-        al = LexicalAnalysis(code_name, code_content, output=False)
+        al = LexicalAnalysis('', code_content, output=False)
 
         is_valid = is_valid and u.includes(al.errors[0].__str__(), 'unrecognized SYMBOL')            
         is_valid = is_valid and u.includes(al.errors[1].__str__(), 'unrecognized OPERATOR')            

@@ -5,10 +5,10 @@ from syntax.syntax_analysis import SyntaxAnalysis
 def main():
     (code_name, code_content) = readCode()
     al = LexicalAnalysis(code_name, code_content)
-    sa = SyntaxAnalysis(al)
+    # sa = Syntax/Analysis(al)
     
     print('\n-------- Syntax --------')
-    sa.execute()
+    # sa.execute()
     print('Successfully Parsed')
 
 

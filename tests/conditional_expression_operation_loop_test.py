@@ -13,9 +13,54 @@ def readCode(file):
 class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
 
     def test_should_pass_all_condition_cases(self):
-        code_name = 'tests/tests_code/conditional_expression_operation_loop.c'
-        code_content = readCode(code_name)
-        al = LexicalAnalysis(code_name, code_content, output=False)
+        code_content = list(""" 
+            int main() {
+
+                if (a == b) {
+
+                    while ((x + 5) < y) {
+
+                    }
+
+                } else {
+                    
+                    while ((x + 5) < y) {
+                        
+                    }
+
+                }
+
+                while (x < 5) {
+
+                }
+
+                if (a == b && a == c) {
+
+                }
+                
+                while (5 > x) {
+
+                }
+
+                if (a == b & a == c) {
+
+                }
+
+
+                if (a == b || a == c) {
+
+                }
+
+                while ((x + 5) < y) {
+                    
+                }
+
+                if (a == b | a == c) {
+
+                }
+             }
+        """)
+        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
@@ -26,9 +71,16 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         self.assertEqual(error, '')
 
     def test_should_raise_error_when_not_relational_operator(self):
-        code_name = 'tests/tests_code/conditional_operator_error.c'
-        code_content = readCode(code_name)
-        al = LexicalAnalysis(code_name, code_content, output=False)
+        code_content = list("""
+            int main() {
+
+                if (a = b) {
+
+                }
+
+            }
+        """)
+        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
@@ -39,9 +91,16 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         self.assertTrue(u.includes(error, 'relational operator Expected'))
 
     def test_should_raise_error_when_no_opening_parenthesis(self):
-        code_name = 'tests/tests_code/conditional_opening_parenthesis_error.c'
-        code_content = readCode(code_name)
-        al = LexicalAnalysis(code_name, code_content, output=False)
+        code_content = list("""
+            int main() {
+
+                if a == b) {
+
+                }
+
+            }
+        """)
+        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
@@ -52,9 +111,16 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         self.assertTrue(u.includes(error, 'opening Parenthesis Expected'))
 
     def test_should_raise_error_when_no_closing_parenthesis(self):
-        code_name = 'tests/tests_code/conditional_closing_parenthesis_error.c'
-        code_content = readCode(code_name)
-        al = LexicalAnalysis(code_name, code_content, output=False)
+        code_content = list("""
+            int main() {
+
+                if (a == b {
+
+                }
+
+            }
+        """)
+        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
@@ -64,10 +130,17 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
 
         self.assertTrue(u.includes(error, 'closing Parenthesis Expected'))
 
-    def test_should_raise_error_when_no_opening_parenthesis(self):
-        code_name = 'tests/tests_code/conditional_else_without_curly_error.c'
-        code_content = readCode(code_name)
-        al = LexicalAnalysis(code_name, code_content, output=False)
+    def test_should_raise_error_when_no_opening_curly_after_else(self):
+        code_content = list("""
+            int main() {
+
+                if (a == b) {
+
+                } else
+
+            }
+        """)
+        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
