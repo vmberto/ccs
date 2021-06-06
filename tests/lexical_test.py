@@ -1,6 +1,6 @@
 from syntax.syntax_analysis import SyntaxAnalysis
 from lexical.lexical_analysis import LexicalAnalysis
-import utils as u
+import tests.test_utils as u
 import unittest
 
 def readCode(file):
@@ -21,7 +21,6 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
             =%
 
             123a
-
         """)
         is_valid = True
     
@@ -33,6 +32,33 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         is_valid = is_valid and u.includes(al.errors[3].__str__(), 'unrecognized NUMBER')        
 
         self.assertTrue(is_valid)
+
+    def test_lexical_empty_code(self):
+        code_content = list('')
+    
+        al = LexicalAnalysis('', code_content, output=False)
+
+        token = al.getNextToken()
+
+        self.assertEquals(token, None)
+
+    # def test_lexical_token_types(self):
+    #     code_content = list("""
+    #         int a = 1;
+    #         float b = 2;
+    #     """)
+    
+    #     al = LexicalAnalysis('', code_content, output=False)
+
+    #     token = al.getNextToken()
+    #     token.getType()
+    #     token.__repr__()
+    #     while (token != None):
+    #         token = al.getNextToken()
+    #         token.getType()
+
+        
+    #     self.assertEquals(token, None)
 
 if __name__ == '__main__':
     unittest.main()

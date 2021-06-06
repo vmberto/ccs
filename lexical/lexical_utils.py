@@ -43,6 +43,3 @@ def isReservedWord(term):
 
 def countLine(char):
     return char is '\n' or char is '\r'
-
-def includes(string, substring):
-    return string.find(substring) > -1

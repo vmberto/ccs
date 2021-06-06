@@ -1,6 +1,6 @@
 from syntax.syntax_analysis import SyntaxAnalysis
 from lexical.lexical_analysis import LexicalAnalysis
-import utils as u
+import tests.test_utils as u
 import unittest
 
 def readCode(file):
@@ -10,7 +10,7 @@ def readCode(file):
     code.close()
     return code_content
 
-class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
+class GeneralSynthaticTests(unittest.TestCase):
 
     def test_should_raise_error_unexpected_end_of_file(self):
         code_content = list("""

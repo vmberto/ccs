@@ -1,6 +1,6 @@
-import utils as u
 from lexical.token_model import Token
 from syntax.syntax_exception import SyntaxException
+import syntax.syntax_utils as u
 
 class SyntaxAnalysis:
 
@@ -37,7 +37,6 @@ class SyntaxAnalysis:
         if (self.box['token'].text != ')'):
             raise SyntaxException('closing parenthesis Expected!')
 
-
 class BlockScopeParser:
 
     def __init__(self, box):
@@ -49,11 +48,11 @@ class BlockScopeParser:
     def execute(self, mainExecution=False):
         self.expectOpeningCurlyBracket()
         while(not self.expectClosingCurlyBracket()):
-            if (self.attp.checkTokenCompatibility()):
+            if (self.attp.isAttributionStatement()):
                 self.attp.execute()
-            elif (self.lp.checkTokenCompatibility()):
+            elif (self.lp.isLoopStatement()):
                 self.lp.execute()
-            elif (self.cep.checkTokenCompatibility()):
+            elif (self.cep.isConditionalStatement()):
                 self.cep.execute()
             elif (self.box['token'].type != Token.TK_SPECIAL_CHAR):
                 raise SyntaxException('unexpected token', self.box['token'])
@@ -63,7 +62,6 @@ class BlockScopeParser:
         if (not mainExecution and not self.box['token']):
             raise SyntaxException('unexpected end of file')
         self.box['token'] = self.box['scanner'].getPreviousToken()
-
 
     def expectOpeningCurlyBracket(self):
         self.box['token'] = self.box['scanner'].getNextToken()
@@ -88,7 +86,7 @@ class ArithmeticParser:
         if (self.asubexpp.checkTokenCompatibility()):
             self.asubexpp.execute()
         else:
-            if (self.checkIfAutoOperator()):
+            if (u.isAutoOperator(self.box['token'].text)):
                 self.box['token'] = self.box['scanner'].getNextToken()
                 self.expectIdentifier()
                 self.analyzingAutoIncrementOperation = True
@@ -100,7 +98,7 @@ class ArithmeticParser:
         previousToken = self.box['token']
         self.box['token'] = self.box['scanner'].getNextToken()
 
-        if (self.checkIfAutoOperator()):
+        if (u.isAutoOperator(self.box['token'].text)):
             self.validateIfCurrentAutoOperation()
             self.expectIdentifier(previousToken)
             self.box['token'] = self.box['scanner'].getNextToken()
@@ -112,7 +110,7 @@ class ArithmeticParser:
             if (self.asubexpp.checkTokenCompatibility()):
                 self.asubexpp.execute()
             else:
-                if (self.checkIfAutoOperator()):
+                if (u.isAutoOperator(self.box['token'].text)):
                     self.box['token'] = self.box['scanner'].getNextToken()
                     self.expectIdentifier()
                     self.analyzingAutoIncrementOperation = True
@@ -136,9 +134,6 @@ class ArithmeticParser:
         if (self.analyzingAutoIncrementOperation):
             raise SyntaxException('invalid operation with dual auto-operators', self.box['token'])   
 
-    def checkIfAutoOperator(self):
-        return (self.box['token'].text == '++' or self.box['token'].text == '--')
-
     def checkTokenCompatibility(self):
         return self.box['token'].type is Token.TK_IDENTIFIER or self.box['token'].type is Token.TK_INT or self.box['token'].type is Token.TK_FLOAT or (self.box['token'].type is Token.TK_ARITHMETIC_OPERATOR and self.box['token'].text != '=' and self.box['token'].text != ';')
 
@@ -146,7 +141,7 @@ class ArithmeticSubExpressionParser:
     def __init__(self, box):
         self.box = box
 
-    def execute(self, reexecution = False):
+    def execute(self):
         self.expectOpeningParenthesis()
 
         ap = ArithmeticParser(self.box)
@@ -177,7 +172,7 @@ class AttributionParser:
             self.expectVariableTypeDeclaration()
         self.expectIdentifier(reexecution)
         self.expectNextAttrOperatorOrSemicolonOrComma()
-        if (self.isAttributionOperator()):
+        if (u.isAttributionOperator(self.box['token'].text)):
             self.ap.execute()
             self.expectSemicolonOrComma()
             self.checkCommaAndExecute()
@@ -185,11 +180,11 @@ class AttributionParser:
             self.checkCommaAndExecute()
 
     def checkCommaAndExecute(self):
-        if (self.isComma()):
+        if (u.isComma(self.box['token'].text)):
             self.execute(reexecution=True)
 
     def expectVariableTypeDeclaration(self):
-        if (not self.checkTokenCompatibility()):
+        if (not self.isAttributionStatement()):
             raise SyntaxException(
                 'type Declaration Expected', self.box['token'])
 
@@ -201,23 +196,14 @@ class AttributionParser:
 
     def expectNextAttrOperatorOrSemicolonOrComma(self):
         self.box['token'] = self.box['scanner'].getNextToken()
-        if (not self.isAttributionOperator() and not self.isComma() and not self.isSemicolon()):
+        if (not u.isAttributionOperator(self.box['token'].text) and not u.isComma(self.box['token'].text) and not u.isSemicolon(self.box['token'].text)):
             raise SyntaxException('attribution operator, semicolon or comma Expected', self.box['token'])
 
     def expectSemicolonOrComma(self):
-        if (not self.isComma() and not self.isSemicolon()):
+        if (not u.isComma(self.box['token'].text) and not u.isSemicolon(self.box['token'].text)):
             raise SyntaxException('semicolon or comma Expected', self.box['token'])
 
-    def isComma(self):
-        return self.box['token'].text == ','
-
-    def isSemicolon(self):
-        return self.box['token'].text == ';'
-
-    def isAttributionOperator(self):
-        return self.box['token'].text == '='
-
-    def checkTokenCompatibility(self):
+    def isAttributionStatement(self):
         if (self.box['token'].type == Token.TK_IDENTIFIER):
             self.isDeclaring = False
         return (self.box['token'].text == 'int' 
@@ -252,7 +238,6 @@ class ConditionalExpressionParser:
         self.box = box
 
     def execute(self):
-        self.expectIf()
         self.expectOpeningParenthesis()
 
         cop = ConditionalOperationParser(self.box)
@@ -267,10 +252,6 @@ class ConditionalExpressionParser:
         else:
             self.box['token'] = self.box['scanner'].getPreviousToken()
 
-    def expectIf(self):
-        if (not self.checkTokenCompatibility()):
-            raise SyntaxException('if Expected', self.box['token'])
-
     def elseExists(self):
         return self.box['token'].text == 'else'
             
@@ -283,8 +264,8 @@ class ConditionalExpressionParser:
         if (self.box['token'].text != ')'):
             raise SyntaxException('closing Parenthesis Expected', self.box['token'])
 
-    def checkTokenCompatibility(self):
-        return self.box['token'].type is Token.TK_RESERVED_WORD and self.box['token'].text == 'if'
+    def isConditionalStatement(self):
+        return Token.TK_RESERVED_WORD and self.box['token'].text == 'if'
 
 class LoopParser:
 
@@ -292,7 +273,6 @@ class LoopParser:
         self.box = box
 
     def execute(self):
-        self.expectWhile()
         self.expectOpeningParenthesis()
 
         cop = ConditionalOperationParser(self.box)
@@ -301,10 +281,6 @@ class LoopParser:
         self.expectClosingParenthesis()
 
         BlockScopeParser(self.box).execute()
-
-    def expectWhile(self):
-        if (not self.checkTokenCompatibility()):
-            raise SyntaxException('if Expected', self.box['token'])
 
     def expectOpeningParenthesis(self):
         self.box['token'] = self.box['scanner'].getNextToken()
@@ -315,5 +291,5 @@ class LoopParser:
         if (self.box['token'].text != ')'):
             raise SyntaxException('closing Parenthesis Expected', self.box['token'])
 
-    def checkTokenCompatibility(self):
-        return self.box['token'].type is Token.TK_RESERVED_WORD and self.box['token'].text == 'while'
+    def isLoopStatement(self):
+        return Token.TK_RESERVED_WORD and self.box['token'].text == 'while'

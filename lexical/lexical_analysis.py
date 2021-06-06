@@ -1,4 +1,4 @@
-import utils as u
+import lexical.lexical_utils as u
 import sys
 import os
 from lexical.token_model import Token
@@ -7,7 +7,7 @@ from lexical.lexical_exception import LexicalException
 class LexicalAnalysis:
 
     def __init__(self, code_name, code_content, output = True):
-        if not os.path.exists('output'):
+        if not os.path.exists('output'): # pragma: no cover
             os.makedirs('output')
         self.__line = 1
         self.__column = 0
@@ -15,7 +15,7 @@ class LexicalAnalysis:
         self.__code_content = code_content
         self.tokens = []
         self.errors = []
-        if (output):
+        if (output): # pragma: no cover
             text_file = open("output/" + code_name + "_lex_tokens" , "w")
         while True:
             try:
@@ -25,16 +25,16 @@ class LexicalAnalysis:
                     self.__position = 0
                     break
                 else:
-                    if (output):
+                    if (output): # pragma: no cover
                         text_file.write(token.__repr__() + '\n')
                     self.tokens.append(token)
             except Exception as e:
-                if (output):
+                if (output): # pragma: no cover
                     text_file.write(e.__str__() + '\n')
                 self.tokens.append(e)
                 self.errors.append(e)
 
-        if (output):
+        if (output): # pragma: no cover
             text_file.close()
 
     def __saveNextToken(self):

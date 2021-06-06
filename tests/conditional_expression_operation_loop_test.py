@@ -1,7 +1,7 @@
 from syntax.syntax_analysis import SyntaxAnalysis
 from lexical.lexical_analysis import LexicalAnalysis
 import unittest
-import utils as u
+import tests.test_utils as u
 
 def readCode(file):
     code = ''
