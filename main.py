@@ -5,11 +5,14 @@ from syntax.syntax_analysis import SyntaxAnalysis
 def main():
     (code_name, code_content) = readCode()
     al = LexicalAnalysis(code_name, code_content)
-    # sa = Syntax/Analysis(al)
+    sa = SyntaxAnalysis(al)
     
     print('\n-------- Syntax --------')
-    # sa.execute()
-    print('Successfully Parsed')
+    try:
+        sa.execute()
+        print('Successfully Parsed')
+    except Exception as e:
+        print(e)
 
 
 def readCode():

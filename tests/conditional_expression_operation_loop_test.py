@@ -16,6 +16,8 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         code_content = list(""" 
             int main() {
 
+                int a = 1, b = 2, x = 3, y = 4, c = 5;
+
                 if (a == b) {
 
                     while ((x + 5) < y) {
@@ -74,6 +76,9 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         code_content = list("""
             int main() {
 
+                int a = 1;
+                int b = 5;
+
                 if (a = b) {
 
                 }
@@ -93,6 +98,9 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
     def test_should_raise_error_when_no_opening_parenthesis(self):
         code_content = list("""
             int main() {
+
+                int a = 1;
+                int b = 1;
 
                 if a == b) {
 
@@ -114,6 +122,9 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         code_content = list("""
             int main() {
 
+                int a = 1;
+                int b = 5;
+
                 if (a == b {
 
                 }
@@ -133,6 +144,9 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
     def test_should_raise_error_when_no_opening_curly_after_else(self):
         code_content = list("""
             int main() {
+
+                int a = 1;
+                int b = 5;
 
                 if (a == b) {
 

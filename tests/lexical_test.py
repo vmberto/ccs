@@ -40,25 +40,7 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
 
         token = al.getNextToken()
 
-        self.assertEquals(token, None)
-
-    # def test_lexical_token_types(self):
-    #     code_content = list("""
-    #         int a = 1;
-    #         float b = 2;
-    #     """)
-    
-    #     al = LexicalAnalysis('', code_content, output=False)
-
-    #     token = al.getNextToken()
-    #     token.getType()
-    #     token.__repr__()
-    #     while (token != None):
-    #         token = al.getNextToken()
-    #         token.getType()
-
-        
-    #     self.assertEquals(token, None)
+        self.assertEqual(token, None)
 
 if __name__ == '__main__':
     unittest.main()

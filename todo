@@ -1,15 +1,7 @@
-- Unificar o Assignment e Declaration modules da analise sintatica
-
-    a = 50, b = 50, c;
-
-    int a = 50, b = 50, c;
-
-ambos acima devem ser validos.
-
-- Fazer o analisador sintatico consumir o utils.py
-
 - Fazer com que o lexico ignore linhas com // (comentario)
 
 - Não há suporte para condicoes aninhado
 
 - Não há suporte para auto operators (++ e --)
+
+- Não há tratamento no semantico para somas com char ( 10 + 'a' )

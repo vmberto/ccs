@@ -17,7 +17,9 @@ class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
                 int a = 1, b = 1, c = 1;
 
-                int d = 1, e = 1, f;
+                a = 5;
+
+                int d = 1, e = 1, f = 5;
                 
                 int g = 1, h, i;
 
@@ -29,6 +31,8 @@ class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
                 a = 1, b = 1, c = 1;
 
+                int z = 1;
+
                 d = 1, e = 1, f;
                 
                 g = 1, h, i;
@@ -38,8 +42,6 @@ class DeclarationAssingmentArithmeticTests(unittest.TestCase):
                 a = ((1) + (1) - ((1 - 1) * 1));
 
                 b = ((1 + a) + (1 + a) - ((1 - (a - 1)) * 1));
-
-                c = (1 + 1 + a + b) / (a + b);
 
                 d = (5 + 5 + (a * b)) / 2;
 

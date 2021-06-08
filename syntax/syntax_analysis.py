@@ -1,3 +1,5 @@
+from semantic.semantic_analysis import SemanticAnalysis
+from semantic.symbol import Symbol
 from lexical.token_model import Token
 from syntax.syntax_exception import SyntaxException
 import syntax.syntax_utils as u
@@ -7,7 +9,9 @@ class SyntaxAnalysis:
     def __init__(self, scanner):
         self.box = {
             "scanner": scanner,
-            "token": None
+            "token": None,
+            "scope": 0,
+            "semantic": SemanticAnalysis()
         }
 
     def execute(self):
@@ -47,6 +51,7 @@ class BlockScopeParser:
 
     def execute(self, mainExecution=False):
         self.expectOpeningCurlyBracket()
+        self.box['scope'] += 1
         while(not self.expectClosingCurlyBracket()):
             if (self.attp.isAttributionStatement()):
                 self.attp.execute()
@@ -58,6 +63,7 @@ class BlockScopeParser:
                 raise SyntaxException('unexpected token', self.box['token'])
             self.box['token'] = self.box['scanner'].getNextToken()
 
+        self.box['scope'] -= 1
         self.box['token'] = self.box['scanner'].getNextToken()
         if (not mainExecution and not self.box['token']):
             raise SyntaxException('unexpected end of file')
@@ -78,50 +84,57 @@ class ArithmeticParser:
 
     def __init__(self, box):
         self.box = box
-        self.analyzingAutoIncrementOperation = False
-        self.asubexpp = ArithmeticSubExpressionParser(self.box)
+        self.completeExpression = ''
+
+    def executeAndGetResult(self):
+        self.execute()
+        result = self.completeExpression
+        self.completeExpression = ''
+        return result
 
     def execute(self):
         self.box['token'] = self.box['scanner'].getNextToken()
-        if (self.asubexpp.checkTokenCompatibility()):
-            self.asubexpp.execute()
+        if (self.isOpeningSubexpression()):
+            self.completeExpression = self.completeExpression + '('
+            self.expectOpeningParenthesis()
+            self.execute()
+            self.expectClosingParenthesis()
+            self.completeExpression = self.completeExpression + ')'
         else:
-            if (u.isAutoOperator(self.box['token'].text)):
-                self.box['token'] = self.box['scanner'].getNextToken()
-                self.expectIdentifier()
-                self.analyzingAutoIncrementOperation = True
+            self.expectNumberOrIdentifier()
+            if (self.box['token'].type == Token.TK_IDENTIFIER):
+                self.completeExpression = self.completeExpression + str(self.box['semantic'].checkIdentifierExistence(self.box['token'].text, self.box['scope']).value)
             else:
-                self.expectNumberOrIdentifier()
+                self.completeExpression = self.completeExpression + self.box['token'].text 
         self.executeL()
 
+
     def executeL(self):
-        previousToken = self.box['token']
         self.box['token'] = self.box['scanner'].getNextToken()
-
-        if (u.isAutoOperator(self.box['token'].text)):
-            self.validateIfCurrentAutoOperation()
-            self.expectIdentifier(previousToken)
-            self.box['token'] = self.box['scanner'].getNextToken()
-
         if (self.box['token'] != None and (self.checkTokenCompatibility())):
-            self.expectArithmeticOperator() 
-            self.analyzingAutoIncrementOperation = False
+            self.expectArithmeticOperator()
+            self.completeExpression = self.completeExpression + self.box['token'].text
             self.box['token'] = self.box['scanner'].getNextToken()
-            if (self.asubexpp.checkTokenCompatibility()):
-                self.asubexpp.execute()
+            if (self.isOpeningSubexpression()):
+                self.completeExpression = self.completeExpression + ' ( '
+                self.expectOpeningParenthesis()
+                self.execute()
+                self.expectClosingParenthesis()
+                self.completeExpression = self.completeExpression + ' ) '
             else:
-                if (u.isAutoOperator(self.box['token'].text)):
-                    self.box['token'] = self.box['scanner'].getNextToken()
-                    self.expectIdentifier()
-                    self.analyzingAutoIncrementOperation = True
+                self.expectNumberOrIdentifier()
+                if (self.box['token'].type == Token.TK_IDENTIFIER):
+                    identifierValue = str(self.box['semantic'].checkIdentifierExistence(self.box['token'].text, self.box['scope']).value)
+                    self.completeExpression = self.completeExpression + identifierValue
                 else:
-                    self.expectNumberOrIdentifier()
+                    self.completeExpression = self.completeExpression + self.box['token'].text
+
             self.executeL()
-    
+
     def expectNumberOrIdentifier(self):
         if (self.box['token'].type != Token.TK_IDENTIFIER and self.box['token'].type != Token.TK_INT and self.box['token'].type != Token.TK_FLOAT and self.box['token'].type != Token.TK_CHAR):
             raise SyntaxException('identifier or number Expected', self.box['token'])
-
+        
     def expectIdentifier(self, token = None):
         if (token.type != Token.TK_IDENTIFIER if token else self.box['token'].type != Token.TK_IDENTIFIER):
             raise SyntaxException('identifier for auto-operator Expected', token if token else self.box['token'])
@@ -134,21 +147,6 @@ class ArithmeticParser:
         if (self.analyzingAutoIncrementOperation):
             raise SyntaxException('invalid operation with dual auto-operators', self.box['token'])   
 
-    def checkTokenCompatibility(self):
-        return self.box['token'].type is Token.TK_IDENTIFIER or self.box['token'].type is Token.TK_INT or self.box['token'].type is Token.TK_FLOAT or (self.box['token'].type is Token.TK_ARITHMETIC_OPERATOR and self.box['token'].text != '=' and self.box['token'].text != ';')
-
-class ArithmeticSubExpressionParser:
-    def __init__(self, box):
-        self.box = box
-
-    def execute(self):
-        self.expectOpeningParenthesis()
-
-        ap = ArithmeticParser(self.box)
-        ap.execute()
-        
-        self.expectClosingParenthesis()
-
     def expectOpeningParenthesis(self):
         if (self.box['token'].text != '('):
             raise SyntaxException('opening Parenthesis Expected', self.box['token'])
@@ -157,8 +155,11 @@ class ArithmeticSubExpressionParser:
         if (self.box['token'].text != ')'):
             raise SyntaxException('closing Parenthesis Expected', self.box['token'])
 
-    def checkTokenCompatibility(self):
+    def isOpeningSubexpression(self):
         return self.box['token'].text == '('
+
+    def checkTokenCompatibility(self):
+        return self.box['token'].type is Token.TK_IDENTIFIER or self.box['token'].type is Token.TK_INT or self.box['token'].type is Token.TK_FLOAT or (self.box['token'].type is Token.TK_ARITHMETIC_OPERATOR and self.box['token'].text != '=' and self.box['token'].text != ';')
 
 class AttributionParser:
 
@@ -167,21 +168,34 @@ class AttributionParser:
         self.isDeclaring = True
         self.ap = ArithmeticParser(self.box)
 
-    def execute(self, reexecution=False):
+    def execute(self, reexecution=False, type=None):
+        newSymbol = Symbol(self.box['scope'])
         if (not reexecution and self.isDeclaring):
             self.expectVariableTypeDeclaration()
-        self.expectIdentifier(reexecution)
-        self.expectNextAttrOperatorOrSemicolonOrComma()
-        if (u.isAttributionOperator(self.box['token'].text)):
-            self.ap.execute()
-            self.expectSemicolonOrComma()
-            self.checkCommaAndExecute()
-        else:
-            self.checkCommaAndExecute()
+            newSymbol.setType(self.box['token'].text)
 
-    def checkCommaAndExecute(self):
+        if (type):
+            newSymbol.setType(type)
+
+        self.expectIdentifier(reexecution)
+        newSymbol.setIdentifier(self.box['token'].text)
+
+        self.expectNextAttrOperatorOrSemicolonOrComma()
+
+        if (u.isAttributionOperator(self.box['token'].text)):
+            expression = self.ap.executeAndGetResult()
+            newSymbol.setValue(expression)
+            self.box['semantic'].insertSymbol(newSymbol, self.isDeclaring)
+            self.expectSemicolonOrComma()
+            self.checkCommaAndExecute(newSymbol.type)
+        else:
+            newSymbol.setValue(None)
+            self.box['semantic'].insertSymbol(newSymbol, self.isDeclaring)
+            self.checkCommaAndExecute(newSymbol.type)
+
+    def checkCommaAndExecute(self, type):
         if (u.isComma(self.box['token'].text)):
-            self.execute(reexecution=True)
+            self.execute(type=type, reexecution=True)
 
     def expectVariableTypeDeclaration(self):
         if (not self.isAttributionStatement()):
@@ -206,6 +220,8 @@ class AttributionParser:
     def isAttributionStatement(self):
         if (self.box['token'].type == Token.TK_IDENTIFIER):
             self.isDeclaring = False
+        else:
+            self.isDeclaring = True
         return (self.box['token'].text == 'int' 
             or self.box['token'].text == 'float' 
             or self.box['token'].text == 'char' 
