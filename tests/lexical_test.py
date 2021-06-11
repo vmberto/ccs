@@ -24,7 +24,7 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         """)
         is_valid = True
     
-        al = LexicalAnalysis('', code_content, output=False)
+        al = LexicalAnalysis(code_content)
 
         is_valid = is_valid and u.includes(al.errors[0].__str__(), 'unrecognized SYMBOL')            
         is_valid = is_valid and u.includes(al.errors[1].__str__(), 'unrecognized OPERATOR')            
@@ -36,7 +36,7 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
     def test_lexical_empty_code(self):
         code_content = list('')
     
-        al = LexicalAnalysis('', code_content, output=False)
+        al = LexicalAnalysis(code_content)
 
         token = al.getNextToken()
 

@@ -1,4 +1,3 @@
-from tests.test_utils import includes
 from semantic.semantic_exception import SemanticException
 
 class SemanticAnalysis:
@@ -28,6 +27,7 @@ class SemanticAnalysis:
                     raise SemanticException('Variable (' + str(newSymbol.identifier) + ') already declared')
             self.symbolTable.append(newSymbol)
 
+
     def checkIdentifierExistence(self, identifier, scope, identifierValueInUse = True):
         for symbol in self.symbolTable:
             if (
@@ -40,5 +40,11 @@ class SemanticAnalysis:
                 return symbol
         
         raise SemanticException("Variable (" + str(identifier) + ") undeclared")
+
+    def outputSymbolTable(self, code_name): #pragma: no cover
+        text_file = open(__file__.replace('/semantic/semantic_analysis.py', '') + "/output/" + code_name + "_symbol_table", "w")
+        for symbol in self.symbolTable:
+            text_file.write(symbol.__repr__() + '\n')
+        text_file.close()
                 
 

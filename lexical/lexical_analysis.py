@@ -6,7 +6,7 @@ from lexical.lexical_exception import LexicalException
 
 class LexicalAnalysis:
 
-    def __init__(self, code_name, code_content, output = True):
+    def __init__(self, code_content):
         if not os.path.exists('output'): # pragma: no cover
             os.makedirs('output')
         self.__line = 1
@@ -15,8 +15,6 @@ class LexicalAnalysis:
         self.__code_content = code_content
         self.tokens = []
         self.errors = []
-        if (output): # pragma: no cover
-            text_file = open("output/" + code_name + "_lex_tokens" , "w")
         while True:
             try:
                 token = self.__saveNextToken()
@@ -25,17 +23,10 @@ class LexicalAnalysis:
                     self.__position = 0
                     break
                 else:
-                    if (output): # pragma: no cover
-                        text_file.write(token.__repr__() + '\n')
                     self.tokens.append(token)
             except Exception as e:
-                if (output): # pragma: no cover
-                    text_file.write(e.__str__() + '\n')
                 self.tokens.append(e)
                 self.errors.append(e)
-
-        if (output): # pragma: no cover
-            text_file.close()
 
     def __saveNextToken(self):
         if (self.__isEOF()):
@@ -156,3 +147,9 @@ class LexicalAnalysis:
         token = self.tokens[self.__position]
         self.__position += 1
         return token
+
+    def outputLexicalTokens(self, code_name): #pragma: no cover
+        text_file = open(__file__.replace('/lexical/lexical_analysis.py', '') + "/output/" + code_name + "_lex_tokens", "w")
+        for token in self.tokens:
+            text_file.write(token.__repr__() + '\n')
+        text_file.close()

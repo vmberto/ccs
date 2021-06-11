@@ -1,3 +1,4 @@
+from compile import Compile
 from syntax.syntax_analysis import SyntaxAnalysis
 from lexical.lexical_analysis import LexicalAnalysis
 import tests.test_utils as u
@@ -19,11 +20,9 @@ class SemanticTests(unittest.TestCase):
             }
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
-
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
@@ -42,11 +41,10 @@ class SemanticTests(unittest.TestCase):
 
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
@@ -63,15 +61,14 @@ class SemanticTests(unittest.TestCase):
 
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
-        self.assertEqual(error, 'Semantic Error: Variable a undeclared')
+        self.assertEqual(error, 'Semantic Error: Variable (a) undeclared')
 
     def test_should_raise_unintialized_variable_error(self):
         code_content = list("""
@@ -88,11 +85,10 @@ class SemanticTests(unittest.TestCase):
 
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
@@ -111,11 +107,9 @@ class SemanticTests(unittest.TestCase):
 
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
-
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
@@ -132,15 +126,14 @@ class SemanticTests(unittest.TestCase):
 
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
-        self.assertEqual(error, 'Semantic Error: Variable a already declared')
+        self.assertEqual(error, 'Semantic Error: Variable (a) already declared')
 
     def test_should_pass_same_variable_different_scope(self):
         code_content = list("""
@@ -157,13 +150,13 @@ class SemanticTests(unittest.TestCase):
 
         """)
 
-        al = LexicalAnalysis('', code_content, output=False)
         error = ''
 
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
+            print('aaaaa' + error)
 
         self.assertEqual(error, '')
 

@@ -1,13 +1,7 @@
+from compile import Compile
 from syntax.syntax_analysis import SyntaxAnalysis
 from lexical.lexical_analysis import LexicalAnalysis
 import unittest
-
-def readCode(file):
-    code = ''
-    code = open(file, "r")
-    code_content = list(code.read())
-    code.close()
-    return code_content
 
 class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
@@ -47,11 +41,11 @@ class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
             }
         """)
-        al = LexicalAnalysis('', code_content, output=False)
+
         error = ''
 
         try:
-            SyntaxAnalysis(al).execute()
+            Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
 
