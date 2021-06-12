@@ -5,7 +5,7 @@ class SemanticAnalysis:
     def __init__(self):
         self.symbolTable = []
 
-    def insertSymbol(self, newSymbol, isDeclaring):
+    def insertVariableSymbol(self, newSymbol, isDeclaring):
 
         if (newSymbol.value):
             newSymbol.setValue(eval(newSymbol.value))
@@ -26,7 +26,9 @@ class SemanticAnalysis:
                 ):
                     raise SemanticException('Variable (' + str(newSymbol.identifier) + ') already declared')
             self.symbolTable.append(newSymbol)
-
+    
+    def insertConditionalSymbol(self, newSymbol):
+        self.symbolTable.append(newSymbol)
 
     def checkIdentifierExistence(self, identifier, scope, identifierValueInUse = True):
         for symbol in self.symbolTable:

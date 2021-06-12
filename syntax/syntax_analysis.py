@@ -1,5 +1,5 @@
-from semantic.semantic_analysis import SemanticAnalysis
-from semantic.symbol import Symbol
+from semantic.symbol_conditional_statement import SymbolConditionalStatement
+from semantic.symbol_variable import SymbolVariable
 from lexical.token_model import Token
 from syntax.syntax_exception import SyntaxException
 import syntax.syntax_utils as u
@@ -18,14 +18,9 @@ class SyntaxAnalysis:
     def execute(self):
         expectIntDeclaration(self)
         expectMainDeclaration(self)
-        expectOpeningParenthesis(self)
-        self.expectClosingParenthesis()
+        expectNextToBeOpeningParenthesis(self)
+        expectNextToBeClosingParenthesis(self)
         BlockScopeParser(self.box).execute(mainExecution=True)
-
-    def expectClosingParenthesis(self):
-        self.box['token'] = self.box['scanner'].getNextToken()
-        if (self.box['token'].text != ')'):
-            raise SyntaxException('closing parenthesis Expected!')
 
 class BlockScopeParser:
 
@@ -38,7 +33,6 @@ class BlockScopeParser:
     def execute(self, mainExecution=False):
         expectOpeningCurlyBracket(self)
         self.enterNewScope()
-
         while(not self.waitForClosingCurlyBracket()):
 
             if (self.attp.isAttributionStatement()):
@@ -86,7 +80,7 @@ class ArithmeticParser:
         self.box['token'] = self.box['scanner'].getNextToken()
         if (self.isOpeningSubexpression()):
             self.expression = self.expression + '('
-            self.expectOpeningParenthesis()
+            expectOpeningParenthesis(self)
             self.execute()
             expectClosingParenthesis(self)
             self.expression = self.expression + ')'
@@ -107,7 +101,7 @@ class ArithmeticParser:
             self.box['token'] = self.box['scanner'].getNextToken()
             if (self.isOpeningSubexpression()):
                 self.expression = self.expression + '('
-                self.expectOpeningParenthesis()
+                expectOpeningParenthesis(self)
                 self.execute()
                 expectClosingParenthesis(self)
                 self.expression = self.expression + ')'
@@ -120,10 +114,6 @@ class ArithmeticParser:
                     self.expression = self.expression + self.box['token'].text
 
             self.executeL()
-
-    def expectOpeningParenthesis(self):
-        if (self.box['token'].text != '('):
-            raise SyntaxException('opening Parenthesis Expected', self.box['token'])
 
     def isOpeningSubexpression(self):
         return self.box['token'].text == '('
@@ -139,7 +129,7 @@ class AttributionParser:
         self.ap = ArithmeticParser(self.box)
 
     def execute(self, reexecution=False, type=None):
-        newSymbol = Symbol(self.box['scope'])
+        newSymbol = SymbolVariable(self.box['scope'])
 
         if (not reexecution and self.isDeclaring):
             expectVariableTypeDeclaration(self)
@@ -148,7 +138,9 @@ class AttributionParser:
         if (type):
             newSymbol.setType(type)
 
-        self.expectIdentifier(reexecution)
+        if (self.isDeclaring or (reexecution and not self.isDeclaring)):
+            self.box['token'] = self.box['scanner'].getNextToken()
+        expectIdentifier(self)
 
         newSymbol.setIdentifier(self.box['token'].text)
 
@@ -157,23 +149,17 @@ class AttributionParser:
         if (u.isAttributionOperator(self.box['token'].text)):
             expression = self.ap.executeAndGetResult()
             newSymbol.setValue(expression)
-            self.box['semantic'].insertSymbol(newSymbol, self.isDeclaring)
+            self.box['semantic'].insertVariableSymbol(newSymbol, self.isDeclaring)
             expectSemicolonOrComma(self)
             self.checkCommaAndExecute(newSymbol.type)
         else:
             newSymbol.setValue(None)
-            self.box['semantic'].insertSymbol(newSymbol, self.isDeclaring)
+            self.box['semantic'].insertVariableSymbol(newSymbol, self.isDeclaring)
             self.checkCommaAndExecute(newSymbol.type)
 
     def checkCommaAndExecute(self, type):
         if (u.isComma(self.box['token'].text)):
             self.execute(type=type, reexecution=True)
-
-    def expectIdentifier(self, reexecution):
-        if (self.isDeclaring or (reexecution and not self.isDeclaring)):
-            self.box['token'] = self.box['scanner'].getNextToken()
-        if (self.box['token'].type != Token.TK_IDENTIFIER):
-            raise SyntaxException('identifier Expected', self.box['token'])
 
     def isAttributionStatement(self):
         if (self.box['token'].type == Token.TK_IDENTIFIER):
@@ -192,12 +178,17 @@ class ConditionalOperationParser:
         self.ap = ArithmeticParser(self.box)
 
     def execute(self):
-        self.ap.execute()
+        a = self.ap.executeAndGetResult()
         expectRelationalOperator(self)
-        self.ap.execute()
+        operator = self.box['token'].text
+        b = self.ap.executeAndGetResult()
+
+        c = str(a) + ' ' + operator + ' ' + str(b)
 
         if (self.box['token'].type == Token.TK_CONDITIONAL_OPERATOR):
             self.execute()
+
+        return c
 
 class ConditionalExpressionParser:
 
@@ -205,16 +196,20 @@ class ConditionalExpressionParser:
         self.box = box
 
     def execute(self):
-        expectOpeningParenthesis(self)
-
-        ConditionalOperationParser(self.box).execute()
-
+        expectNextToBeOpeningParenthesis(self)
+        a = ConditionalOperationParser(self.box).execute()
         expectClosingParenthesis(self)
 
+        self.box['semantic'].insertConditionalSymbol(SymbolConditionalStatement('if', a))
         BlockScopeParser(self.box).execute()
+        self.box['semantic'].insertConditionalSymbol(SymbolConditionalStatement('ifend', a))
 
+        
         if (self.checkIfElseExists()):
+            SymbolConditionalStatement('else')
             BlockScopeParser(self.box).execute()
+            SymbolConditionalStatement('elseend')
+
 
     def checkIfElseExists(self):
         self.box['token'] = self.box['scanner'].getNextToken()
@@ -233,13 +228,15 @@ class LoopParser:
 
     def execute(self):
 
-        expectOpeningParenthesis(self)
+        expectNextToBeOpeningParenthesis(self)
 
-        ConditionalOperationParser(self.box).execute()
+        a = ConditionalOperationParser(self.box).execute()
 
         expectClosingParenthesis(self)
 
+        self.box['semantic'].insertConditionalSymbol(SymbolConditionalStatement('while', a))
         BlockScopeParser(self.box).execute()
+        self.box['semantic'].insertConditionalSymbol(SymbolConditionalStatement('whileend', a))
 
     def isLoopStatement(self):
         return self.box['token'].text == 'while'

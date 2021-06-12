@@ -1,4 +1,4 @@
-class Symbol:
+class SymbolVariable:
 
     def __init__(self, scope):
         self.type = ''
@@ -19,4 +19,4 @@ class Symbol:
         self.identifier = identifier
 
     def __repr__(self):
-        return 'Symbol [Type: ' + self.type + ' | Identificador: ' + self.identifier + ' | Value: ' + str(self.value) + ' | Escopo: ' + str(self.scope) + ']'
+        return 'SymbolVariable [Type: ' + self.type + ' | Identificador: ' + self.identifier + ' | Value: ' + str(self.value) + ' | Escopo: ' + str(self.scope) + ']'

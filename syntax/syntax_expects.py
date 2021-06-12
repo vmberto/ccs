@@ -3,6 +3,11 @@ from syntax.syntax_exception import SyntaxException
 from lexical.token_model import Token
 from syntax.syntax_exception import SyntaxException
 
+def expectNextToBeClosingParenthesis(self):
+    self.box['token'] = self.box['scanner'].getNextToken()
+    if (self.box['token'].text != ')'):
+        raise SyntaxException('closing parenthesis Expected!')
+
 def expectIntDeclaration(s):
     s.box['token'] = s.box['scanner'].getNextToken()
     if (s.box['token'].text != 'int'):
@@ -45,6 +50,10 @@ def expectRelationalOperator(s):
         raise SyntaxException('relational operator Expected', s.box['token'])
 
 def expectOpeningParenthesis(s):
+    if (s.box['token'].text != '('):
+        raise SyntaxException('opening Parenthesis Expected', s.box['token'])
+
+def expectNextToBeOpeningParenthesis(s):
     s.box['token'] = s.box['scanner'].getNextToken()
     if (s.box['token'].text != '('):
         raise SyntaxException('opening Parenthesis Expected', s.box['token'])
@@ -52,3 +61,7 @@ def expectOpeningParenthesis(s):
 def expectClosingParenthesis(s):
     if (s.box['token'].text != ')'):
         raise SyntaxException('closing Parenthesis Expected', s.box['token'])
+
+def expectIdentifier(self):
+    if (self.box['token'].type != Token.TK_IDENTIFIER):
+        raise SyntaxException('identifier Expected', self.box['token'])

@@ -51,6 +51,23 @@ class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
         self.assertEqual(error, '')
 
+    def test_should_raise_error_identifier_expected(self):
+        code_content = list("""
+
+            int main() {
+
+                int x, ;
+
+        """)
+
+        error = ''
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual(error, 'Syntax Error: identifier Expected, found Special Character ( ; ) at LINE 5 and COLUMN 24')
+
 
 if __name__ == '__main__':
     unittest.main()

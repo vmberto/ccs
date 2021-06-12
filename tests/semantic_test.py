@@ -156,10 +156,35 @@ class SemanticTests(unittest.TestCase):
             Compile(code_content=code_content, testing=True)
         except Exception as e:
             error = e.__str__()
-            print('aaaaa' + error)
 
         self.assertEqual(error, '')
 
+    def test_should_pass_same_variable_different_scope_other_case(self):
+        code_content = list("""
+            int main() {
+
+                int a = 50;
+                int b = 50;
+
+                if (a == b) {
+                    int a = 10;
+                }
+
+                if (a < b) {
+                    int a = 10;
+                }
+
+            }
+        """)
+
+        error = ''
+
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual(error, '')
 
 if __name__ == '__main__':
     unittest.main()

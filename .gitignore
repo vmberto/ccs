@@ -135,4 +135,4 @@ dmypy.json
 output/*
 !output/.gitkeep
 
-./*.c
+*.c

@@ -1,3 +1,4 @@
+from generate_code.generate_code import GenerateCode
 import sys
 import datetime
 from utils.logger import log
@@ -10,7 +11,7 @@ class Compile:
     def __init__(self, code_name = '', code_content = '', testing = False):
         begin_time = datetime.datetime.now()
 
-        if (not code_content):
+        if (not code_content): #pragma: no coverage
             (code_name, code_content) = self.readCode()
 
         log('Compiling...', (255, 250, 205), testing)
@@ -26,14 +27,15 @@ class Compile:
         except Exception as e:
             if (testing):
                 raise e
-            else:
+            else: #pragma: no coverage
                 log(e, (255, 0, 0), testing)
 
-        if (not testing):
+        if (not testing): #pragma: no coverage
             sema.outputSymbolTable(code_name)
             la.outputLexicalTokens(code_name)
+            GenerateCode(code_name, sema.symbolTable)
 
-    def readCode(self):
+    def readCode(self): #pragma: no coverage
         code = ''
         code_name = 'code.c'
         try:
@@ -43,8 +45,8 @@ class Compile:
             code = open(code_name, "r").read()
         return [code_name, list(code)]
 
-def main():
+def main(): #pragma: no coverage
     Compile()
     
-if (__name__ == '__main__'):
+if (__name__ == '__main__'): #pragma: no coverage
     main()

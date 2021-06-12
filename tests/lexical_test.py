@@ -33,6 +33,29 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
 
         self.assertTrue(is_valid)
 
+    def test_lexical_tokens(self):
+        code_content = list("""
+            ==
+
+            +
+
+            ||
+
+            123
+
+            123.123
+
+        """)
+    
+        al = LexicalAnalysis(code_content)
+
+
+        self.assertEqual(al.getNextToken().getType(), 'Relational Operator')
+        self.assertEqual(al.getNextToken().getType(), 'Arithmetic Operator')
+        self.assertEqual(al.getNextToken().getType(), 'Conditional Operator')
+        self.assertEqual(al.getNextToken().getType(), 'Integer')
+        self.assertEqual(al.getNextToken().getType(), 'Float')
+
     def test_lexical_empty_code(self):
         code_content = list('')
     
