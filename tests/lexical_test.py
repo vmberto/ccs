@@ -45,6 +45,12 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
 
             123.123
 
+            'a'
+
+            while
+
+            variable
+
         """)
     
         al = LexicalAnalysis(code_content)
@@ -55,6 +61,10 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         self.assertEqual(al.getNextToken().getType(), 'Conditional Operator')
         self.assertEqual(al.getNextToken().getType(), 'Integer')
         self.assertEqual(al.getNextToken().getType(), 'Float')
+        self.assertEqual(al.getNextToken().getType(), 'Char')
+        self.assertEqual(al.getNextToken().getType(), 'Reserved Word')
+        self.assertEqual(al.getNextToken().getType(), 'Identifier')
+        
 
     def test_lexical_empty_code(self):
         code_content = list('')

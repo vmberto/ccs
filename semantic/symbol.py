@@ -1,4 +1,4 @@
-class SymbolVariable:
+class Symbol:
 
     def __init__(self, scope):
         self.type = ''

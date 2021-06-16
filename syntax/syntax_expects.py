@@ -8,17 +8,17 @@ def expectNextToBeClosingParenthesis(self):
     if (self.box['token'].text != ')'):
         raise SyntaxException('closing parenthesis Expected!')
 
-def expectIntDeclaration(s):
+def expectNextToBeIntDeclaration(s):
     s.box['token'] = s.box['scanner'].getNextToken()
     if (s.box['token'].text != 'int'):
         raise SyntaxException('type declaration for main identifier Expected', s.box['token'])
 
-def expectMainDeclaration(s):
+def expectNextToBeMainDeclaration(s):
     s.box['token'] = s.box['scanner'].getNextToken()
     if (s.box['token'].text != 'main'):
         raise SyntaxException('main identifier Expected', s.box['token'])
 
-def expectOpeningCurlyBracket(s):
+def expectNextToBeOperningCurlyBracket(s):
     s.box['token'] = s.box['scanner'].getNextToken()
     if (s.box['token'].text != '{'):
         raise SyntaxException('opening curly braces Expected', s.box['token'])

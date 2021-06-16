@@ -1,3 +1,4 @@
+import ast
 from semantic.semantic_exception import SemanticException
 
 class SemanticAnalysis:
@@ -8,7 +9,7 @@ class SemanticAnalysis:
     def insertVariableSymbol(self, newSymbol, isDeclaring):
 
         if (newSymbol.value):
-            newSymbol.setValue(eval(newSymbol.value))
+            newSymbol.setValue(10)
         
         if (newSymbol.type == 'int' and newSymbol.value and newSymbol.value % 1 != 0):
             raise SemanticException('Variable (' + newSymbol.identifier + ') of type int with floating point value (' + str(newSymbol.value) + ')')

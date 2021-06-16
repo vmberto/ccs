@@ -33,7 +33,7 @@ class Compile:
         if (not testing): #pragma: no coverage
             sema.outputSymbolTable(code_name)
             la.outputLexicalTokens(code_name)
-            GenerateCode(code_name, sema.symbolTable)
+            GenerateCode().saveCode(code_name)
 
     def readCode(self): #pragma: no coverage
         code = ''

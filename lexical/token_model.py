@@ -39,5 +39,5 @@ class Token:
             tokenType = 'Char'
         return tokenType
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no coverage
         return 'Token [Type: ' + self.getType() + ' | Text: ' + self.text + ' | Line: ' + str(self.line) + ' | Column: ' + str(self.column) + ']'
