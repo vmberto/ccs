@@ -68,6 +68,83 @@ class DeclarationAssingmentArithmeticTests(unittest.TestCase):
 
         self.assertEqual(error, 'Syntax Error: identifier Expected, found Special Character ( ; ) at LINE 5 and COLUMN 24')
 
+    def test_should_raise_error_semicolon_or_comma_expected(self):
+        code_content = list("""
+
+            int main() {
+
+                int x = 1 + 1
+
+            }
+
+        """)
+
+        error = ''
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual(error, 'Syntax Error: semicolon or comma Expected, found Special Character ( } ) at LINE 7 and COLUMN 13')
+
+    def test_should_raise_error_attribution_semicolon_or_comma_expected(self):
+        code_content = list("""
+
+            int main() {
+
+                int x a
+
+            }
+
+        """)
+
+        error = ''
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual(error, 'Syntax Error: attribution operator, semicolon or comma Expected, found Identifier ( a ) at LINE 5 and COLUMN 23')
+
+    def test_should_raise_error_operator_expected(self):
+        code_content = list("""
+
+            int main() {
+
+                int x = 1 1
+
+            }
+
+        """)
+
+        error = ''
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual(error, 'Syntax Error: operator Expected, found Integer ( 1 ) at LINE 5 and COLUMN 27')
+
+    def test_should_raise_error_identifier_or_number_expected(self):
+        code_content = list("""
+
+            int main() {
+
+                int x = 1 + {
+
+            }
+
+        """)
+
+        error = ''
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual(error, 'Syntax Error: identifier or number Expected, found Special Character ( { ) at LINE 5 and COLUMN 29')
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -64,6 +64,65 @@ class GeneralSynthaticTests(unittest.TestCase):
 
         self.assertTrue(u.includes(error, 'unexpected token'))
 
+    def test_should_raise_error_int_declaration_expected(self):
+        code_content = list("""
+ 
+
+        """)   
+        error = ''
+
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual('Syntax Error: type declaration for main identifier Expected', error)
+
+    def test_should_raise_error_main_declaration_expected(self):
+        code_content = list("""
+
+            int 
+
+        """)   
+        error = ''
+
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual('Syntax Error: main identifier Expected', error)
+
+    def test_should_raise_error_main_opening_parenthesis_declaration_expected(self):
+        code_content = list("""
+
+            int main 
+
+        """)   
+        error = ''
+
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual('Syntax Error: opening Parenthesis Expected', error)
+
+    def test_should_raise_error_main_closing_parenthesis_declaration_expected(self):
+        code_content = list("""
+
+            int main(
+
+        """)   
+        error = ''
+
+        try:
+            Compile(code_content=code_content, testing=True)
+        except Exception as e:
+            error = e.__str__()
+
+        self.assertEqual('Syntax Error: closing Parenthesis Expected', error)
+
 if __name__ == '__main__':
     unittest.main()
 

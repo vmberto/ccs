@@ -1,16 +1,16 @@
-class Symbol:
+class Symbol: # pragma: no coverage
 
     def __init__(self, scope):
         self.type = ''
         self.identifier = ''
-        self.value = ''
+        self.initialized = False
         self.scope = scope
     
     def setType(self, type):
         self.type = type
 
-    def setValue(self, value):
-        self.value = value
+    def setInitialized(self, initialized):
+        self.initialized = initialized
 
     def setScope(self, scope):
         self.scope = scope
@@ -19,4 +19,4 @@ class Symbol:
         self.identifier = identifier
 
     def __repr__(self):
-        return 'SymbolVariable [Type: ' + self.type + ' | Identificador: ' + self.identifier + ' | Value: ' + str(self.value) + ' | Escopo: ' + str(self.scope) + ']'
+        return 'Symbol [Type: ' + self.type + ' | Identificador: ' + self.identifier + ' | Initialized: ' + str(self.initialized) + ' | Scope: ' + str(self.scope) + ']'

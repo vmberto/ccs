@@ -54,6 +54,19 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
                 if (a == b | a == c) {
 
                 }
+
+                if (5 > 1) {
+
+                }
+
+                if (5 >= 1) {
+                    
+                }
+
+                if (5 <= 1) {
+                    
+                }
+
              }
         """)
 

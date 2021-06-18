@@ -5,17 +5,17 @@ from syntax.syntax_exception import SyntaxException
 
 def expectNextToBeClosingParenthesis(self):
     self.box['token'] = self.box['scanner'].getNextToken()
-    if (self.box['token'].text != ')'):
-        raise SyntaxException('closing parenthesis Expected!')
+    if (self.box['token'] is None or self.box['token'].text != ')'):
+        raise SyntaxException('closing Parenthesis Expected')
 
 def expectNextToBeIntDeclaration(s):
     s.box['token'] = s.box['scanner'].getNextToken()
-    if (s.box['token'].text != 'int'):
+    if (s.box['token'] is None or s.box['token'].text != 'int'):
         raise SyntaxException('type declaration for main identifier Expected', s.box['token'])
 
 def expectNextToBeMainDeclaration(s):
     s.box['token'] = s.box['scanner'].getNextToken()
-    if (s.box['token'].text != 'main'):
+    if (s.box['token'] is None or s.box['token'].text != 'main'):
         raise SyntaxException('main identifier Expected', s.box['token'])
 
 def expectNextToBeOperningCurlyBracket(s):
@@ -31,11 +31,6 @@ def expectArithmeticOperator(s):
     if (s.box['token'].type != Token.TK_ARITHMETIC_OPERATOR):
         raise SyntaxException('operator Expected', s.box['token'])
 
-def expectVariableTypeDeclaration(s):
-    if (not (s.box['token'].text == 'int' or s.box['token'].text == 'float' 
-            or s.box['token'].text == 'char' or s.box['token'].type == Token.TK_IDENTIFIER)):
-        raise SyntaxException('type Declaration Expected', s.box['token'])
-
 def expectNextAttrOperatorOrSemicolonOrComma(s):
     s.box['token'] = s.box['scanner'].getNextToken()
     if (not u.isAttributionOperator(s.box['token'].text) and not u.isComma(s.box['token'].text) and not u.isSemicolon(s.box['token'].text)):
@@ -49,13 +44,9 @@ def expectRelationalOperator(s):
     if (s.box['token'].type != Token.TK_RELATIONAL_OPERATOR):
         raise SyntaxException('relational operator Expected', s.box['token'])
 
-def expectOpeningParenthesis(s):
-    if (s.box['token'].text != '('):
-        raise SyntaxException('opening Parenthesis Expected', s.box['token'])
-
 def expectNextToBeOpeningParenthesis(s):
     s.box['token'] = s.box['scanner'].getNextToken()
-    if (s.box['token'].text != '('):
+    if (s.box['token'] is None or s.box['token'].text != '('):
         raise SyntaxException('opening Parenthesis Expected', s.box['token'])
 
 def expectClosingParenthesis(s):

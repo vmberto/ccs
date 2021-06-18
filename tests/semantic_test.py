@@ -11,11 +11,7 @@ class SemanticTests(unittest.TestCase):
 
             int main() {
 
-                int a = 3;
-
-                a = 2;
-
-                int b = 3 / a;
+                int b = 3 / 2;
             
             }
         """)
@@ -36,7 +32,6 @@ class SemanticTests(unittest.TestCase):
                 int a = 5;
 
                 a = 1.5;
-
             }
 
         """)

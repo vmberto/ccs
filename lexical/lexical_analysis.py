@@ -153,3 +153,4 @@ class LexicalAnalysis:
         for token in self.tokens:
             text_file.write(token.__repr__() + '\n')
         text_file.close()
+

@@ -5,3 +5,5 @@
 - Não há suporte para auto operators (++ e --)
 
 - Não há tratamento no semantico para somas com char ( 10 + 'a' )
+
+- Corrigir o tratamento para Malformed Identifier

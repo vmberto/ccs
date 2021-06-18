@@ -21,6 +21,8 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
             =%
 
             123a
+
+            fd$
         """)
         is_valid = True
     
@@ -29,7 +31,8 @@ class ConditionalExpressionsOperationsLoopTests(unittest.TestCase):
         is_valid = is_valid and u.includes(al.errors[0].__str__(), 'unrecognized SYMBOL')            
         is_valid = is_valid and u.includes(al.errors[1].__str__(), 'unrecognized OPERATOR')            
         is_valid = is_valid and u.includes(al.errors[2].__str__(), 'unrecognized OPERATOR')            
-        is_valid = is_valid and u.includes(al.errors[3].__str__(), 'unrecognized NUMBER')        
+        is_valid = is_valid and u.includes(al.errors[3].__str__(), 'unrecognized NUMBER')   
+        is_valid = is_valid and u.includes(al.errors[4].__str__(), 'Malformed Identifier')     
 
         self.assertTrue(is_valid)
 

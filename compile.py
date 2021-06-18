@@ -14,7 +14,7 @@ class Compile:
         if (not code_content): #pragma: no coverage
             (code_name, code_content) = self.readCode()
 
-        log('Compiling...', (255, 250, 205), testing)
+        log('Compiling...', 'waiting', testing)
 
         la = LexicalAnalysis(code_content)
         sema = SemanticAnalysis()
@@ -23,12 +23,12 @@ class Compile:
         try:
             syna.execute()
             execution_time = datetime.datetime.now() - begin_time
-            log('Successfully Compiled in ' + str(execution_time), (0, 255, 0), testing)
+            log('Successfully Compiled in ' + str(execution_time), 'success', testing)
         except Exception as e:
             if (testing):
                 raise e
             else: #pragma: no coverage
-                log(e, (255, 0, 0), testing)
+                log(e, 'error', testing)
 
         if (not testing): #pragma: no coverage
             sema.outputSymbolTable(code_name)

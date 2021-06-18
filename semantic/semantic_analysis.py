@@ -6,19 +6,23 @@ class SemanticAnalysis:
     def __init__(self):
         self.symbolTable = []
 
-    def insertVariableSymbol(self, newSymbol, isDeclaring):
-
-        if (newSymbol.value):
-            newSymbol.setValue(10)
+    def insertSymbol(self, newSymbol, expression = None, isDeclaring = False):
         
-        if (newSymbol.type == 'int' and newSymbol.value and newSymbol.value % 1 != 0):
-            raise SemanticException('Variable (' + newSymbol.identifier + ') of type int with floating point value (' + str(newSymbol.value) + ')')
+        symbolValue = None
+        if (expression):
+            try:
+                symbolValue = eval(expression)
+            except Exception:
+                pass
+
+        if (newSymbol.type == 'int' and symbolValue and symbolValue % 1 != 0):
+            raise SemanticException('Variable (' + newSymbol.identifier + ') of type int with floating point value (' + str(symbolValue) + ')')
 
         if (not isDeclaring):
             symbol = self.checkIdentifierExistence(newSymbol.identifier, newSymbol.scope, identifierValueInUse=False)
-            if (symbol.type == 'int' and newSymbol.value and newSymbol.value % 1 != 0):
-                raise SemanticException('Variable (' + newSymbol.identifier + ') of type int with floating point value (' + str(newSymbol.value) + ')')
-            symbol.value = newSymbol.value
+            symbol.setInitialized(True)
+            if (symbol.type == 'int' and (symbolValue and symbolValue % 1 != 0)):
+                raise SemanticException('Variable (' + newSymbol.identifier + ') of type int with floating point value (' + str(symbolValue) + ')')
         else:
             for symbol in self.symbolTable:
                 if (
@@ -28,16 +32,13 @@ class SemanticAnalysis:
                     raise SemanticException('Variable (' + str(newSymbol.identifier) + ') already declared')
             self.symbolTable.append(newSymbol)
     
-    def insertConditionalSymbol(self, newSymbol):
-        self.symbolTable.append(newSymbol)
-
     def checkIdentifierExistence(self, identifier, scope, identifierValueInUse = True):
         for symbol in self.symbolTable:
             if (
                 symbol.identifier == identifier and
                 symbol.scope <= scope
             ):
-                if (identifierValueInUse and not symbol.value):
+                if (identifierValueInUse and not symbol.initialized):
                     raise SemanticException("Variable (" + symbol.identifier + ') was declared but not initialized')
 
                 return symbol
@@ -50,4 +51,6 @@ class SemanticAnalysis:
             text_file.write(symbol.__repr__() + '\n')
         text_file.close()
                 
+
+
 

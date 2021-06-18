@@ -1,19 +1,11 @@
 import ast
 import re
 
-def evalAll(x):
-    return eval(x)
-
-
 class GetTACSequence:
 
     def __init__(self, expression):
         self.vars = {}
-        self.ops = []
         self.evaluate(ast.parse(expression, mode='eval').body)
-
-        for val in self.ops:
-            self.vars['t' + str(len(self.vars))] = val
 
         allValues = {}
         for val in self.vars:
@@ -63,15 +55,15 @@ class GetTACSequence:
             elif (isinstance(theoperation.op, ast.Sub)):
                 if (not (str(left) + '-' + str(right)) in self.vars.values()):
                     self.vars['t' + str(len(self.vars))] = (str(left) + '-' + str(right))
-                return left + right if not hasIdentifier else 't' + str(len(self.vars) - 1)
+                return left - right if not hasIdentifier else 't' + str(len(self.vars) - 1)
             elif (isinstance(theoperation.op, ast.Mult)):
                 if (not (str(left) + '*' + str(right)) in self.vars.values()):
                     self.vars['t' + str(len(self.vars))] = (str(left) + '*' + str(right))
-                return left + right if not hasIdentifier else 't' + str(len(self.vars) - 1)
+                return left * right if not hasIdentifier else 't' + str(len(self.vars) - 1)
             elif (isinstance(theoperation.op, ast.Div)):
                 if (not (str(left) + '/' + str(right)) in self.vars.values()):
                     self.vars['t' + str(len(self.vars))] = (str(left) + '/' + str(right))
-                return left + right if not hasIdentifier else 't' + str(len(self.vars) - 1)
+                return left / right if not hasIdentifier else 't' + str(len(self.vars) - 1)
             
     def getSequence(self):
         return self.vars

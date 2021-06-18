@@ -80,7 +80,6 @@ class ArithmeticParser:
         self.box['token'] = self.box['scanner'].getNextToken()
         if (self.isOpeningSubexpression()):
             self.expression = self.expression + '('
-            expectOpeningParenthesis(self)
             self.execute()
             expectClosingParenthesis(self)
             self.expression = self.expression + ')'
@@ -101,7 +100,6 @@ class ArithmeticParser:
             self.box['token'] = self.box['scanner'].getNextToken()
             if (self.isOpeningSubexpression()):
                 self.expression = self.expression + '('
-                expectOpeningParenthesis(self)
                 self.execute()
                 expectClosingParenthesis(self)
                 self.expression = self.expression + ')'
@@ -131,8 +129,7 @@ class AttributionParser:
     def execute(self, reexecution=False, type=None):
         newSymbol = Symbol(self.box['scope'])
 
-        if (not reexecution and self.isDeclaring):
-            expectVariableTypeDeclaration(self)
+        if (self.isDeclaring):
             newSymbol.setType(self.box['token'].text)
 
         if (type):
@@ -140,6 +137,7 @@ class AttributionParser:
 
         if (self.isDeclaring or (reexecution and not self.isDeclaring)):
             self.box['token'] = self.box['scanner'].getNextToken()
+
         expectIdentifier(self)
 
         newSymbol.setIdentifier(self.box['token'].text)
@@ -148,14 +146,13 @@ class AttributionParser:
 
         if (u.isAttributionOperator(self.box['token'].text)):
             expression = self.ap.executeAndGetResult()
-            newSymbol.setValue(expression)
-            self.box['semantic'].insertVariableSymbol(newSymbol, self.isDeclaring)
+            newSymbol.setInitialized(True)
+            self.box['semantic'].insertSymbol(newSymbol, expression, self.isDeclaring)
             expectSemicolonOrComma(self)
             self.checkCommaAndExecute(newSymbol.type)
             GenerateCode().writeAttribution(newSymbol, expression)
         else:
-            newSymbol.setValue(None)
-            self.box['semantic'].insertVariableSymbol(newSymbol, self.isDeclaring)
+            self.box['semantic'].insertSymbol(newSymbol, isDeclaring=self.isDeclaring)
             self.checkCommaAndExecute(newSymbol.type)
         
 
@@ -180,15 +177,15 @@ class ConditionalOperationParser:
         self.ap = ArithmeticParser(self.box)
 
     def execute(self):
-        a = self.ap.executeAndGetResult()
+        expressionA = self.ap.executeAndGetResult()
         expectRelationalOperator(self)
         operator = self.box['token'].text
-        b = self.ap.executeAndGetResult()
+        expressionB = self.ap.executeAndGetResult()
 
         if (self.box['token'].type == Token.TK_CONDITIONAL_OPERATOR):
             self.execute()
 
-        return a, operator, b
+        return expressionA, operator, expressionB
 
 class ConditionalExpressionParser:
 
@@ -197,10 +194,10 @@ class ConditionalExpressionParser:
 
     def execute(self):
         expectNextToBeOpeningParenthesis(self)
-        a, operator, b = ConditionalOperationParser(self.box).execute()
+        expressionA, operator, expressionB = ConditionalOperationParser(self.box).execute()
         expectClosingParenthesis(self)
 
-        GenerateCode().writeIf(a, operator, b)
+        GenerateCode().writeIf(expressionA, operator, expressionB)
 
         BlockScopeParser(self.box).execute()
         
