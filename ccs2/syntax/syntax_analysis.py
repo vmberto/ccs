@@ -1,9 +1,9 @@
-from generate_code.generate_code import GenerateCode
-from semantic.symbol import Symbol
-from lexical.token_model import Token
-from syntax.syntax_exception import SyntaxException
-import syntax.syntax_utils as u
-from syntax.syntax_expects import *
+from ccs2.generate_code.generate_code import GenerateCode
+from ccs2.semantic.symbol import Symbol
+from ccs2.lexical.token_model import Token
+from ccs2.syntax.syntax_exception import SyntaxException
+import ccs2.syntax.syntax_utils as u
+from ccs2.syntax.syntax_expects import *
 
 class SyntaxAnalysis:
 

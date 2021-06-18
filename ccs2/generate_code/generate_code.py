@@ -1,7 +1,7 @@
-from utils.singleton import Singleton
-from generate_code.tac_generator import GetTACSequence
-from generate_code.generate_code_utils import invert
-import lexical.lexical_utils as u
+from ccs2.utils.singleton import Singleton
+from ccs2.generate_code.tac_generator import GetTACSequence
+from ccs2.generate_code.generate_code_utils import invert
+import ccs2.lexical.lexical_utils as u
 import sys
 import os
 
@@ -70,6 +70,6 @@ class GenerateCode(metaclass=Singleton):
         return resultA
 
     def saveCode(self, code_name): # pragma: no coverage
-        self.text_file = open(__file__.replace('/generate_code/generate_code.py', '') + "/output/" + code_name + "_intermediary", "w")
+        self.text_file = open(os.getcwd() + "/output/" + code_name + "_intermediary", "w")
         self.text_file.writelines(self.lines)
         self.text_file.close()

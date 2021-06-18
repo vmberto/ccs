@@ -1,7 +1,7 @@
-import syntax.syntax_utils as u
-from syntax.syntax_exception import SyntaxException
-from lexical.token_model import Token
-from syntax.syntax_exception import SyntaxException
+import ccs2.syntax.syntax_utils as u
+from ccs2.syntax.syntax_exception import SyntaxException
+from ccs2.lexical.token_model import Token
+from ccs2.syntax.syntax_exception import SyntaxException
 
 def expectNextToBeClosingParenthesis(self):
     self.box['token'] = self.box['scanner'].getNextToken()

@@ -1,5 +1,5 @@
-import ast
-from semantic.semantic_exception import SemanticException
+import os
+from ccs2.semantic.semantic_exception import SemanticException
 
 class SemanticAnalysis:
 
@@ -46,7 +46,7 @@ class SemanticAnalysis:
         raise SemanticException("Variable (" + str(identifier) + ") undeclared")
 
     def outputSymbolTable(self, code_name): #pragma: no cover
-        text_file = open(__file__.replace('/semantic/semantic_analysis.py', '') + "/output/" + code_name + "_symbol_table", "w")
+        text_file = open(os.getcwd() + "/output/" + code_name + "_symbol_table", "w")
         for symbol in self.symbolTable:
             text_file.write(symbol.__repr__() + '\n')
         text_file.close()

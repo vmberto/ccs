@@ -1,8 +1,8 @@
-import lexical.lexical_utils as u
+import ccs2.lexical.lexical_utils as u
 import sys
 import os
-from lexical.token_model import Token
-from lexical.lexical_exception import LexicalException
+from ccs2.lexical.token_model import Token
+from ccs2.lexical.lexical_exception import LexicalException
 
 class LexicalAnalysis:
 
@@ -149,7 +149,7 @@ class LexicalAnalysis:
         return token
 
     def outputLexicalTokens(self, code_name): #pragma: no cover
-        text_file = open(__file__.replace('/lexical/lexical_analysis.py', '') + "/output/" + code_name + "_lex_tokens", "w")
+        text_file = open(os.getcwd() + "/output/" + code_name + "_lex_tokens", "w")
         for token in self.tokens:
             text_file.write(token.__repr__() + '\n')
         text_file.close()

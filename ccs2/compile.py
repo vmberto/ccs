@@ -1,18 +1,23 @@
-from generate_code.generate_code import GenerateCode
+from ccs2.generate_code.generate_code import GenerateCode
 import sys
 import datetime
-from utils.logger import log
-from lexical.lexical_analysis import LexicalAnalysis 
-from syntax.syntax_analysis import SyntaxAnalysis 
-from semantic.semantic_analysis import SemanticAnalysis
+from ccs2.utils.logger import log
+from ccs2.lexical.lexical_analysis import LexicalAnalysis 
+from ccs2.syntax.syntax_analysis import SyntaxAnalysis 
+from ccs2.semantic.semantic_analysis import SemanticAnalysis
+import os
 
 class Compile:
 
     def __init__(self, code_name = '', code_content = '', testing = False):
         begin_time = datetime.datetime.now()
-
+        
         if (not code_content): #pragma: no coverage
-            (code_name, code_content) = self.readCode()
+            try:
+                (code_name, code_content) = self.readCode()
+            except Exception:
+                log('Nenhum código encontrado', 'error', testing)
+                return
 
         log('Compiling...', 'waiting', testing)
 
@@ -31,6 +36,10 @@ class Compile:
                 log(e, 'error', testing)
 
         if (not testing): #pragma: no coverage
+            MYDIR = ("output")
+            CHECK_FOLDER = os.path.isdir(MYDIR)
+            if not CHECK_FOLDER:
+                os.makedirs(MYDIR)
             sema.outputSymbolTable(code_name)
             la.outputLexicalTokens(code_name)
             GenerateCode().saveCode(code_name)

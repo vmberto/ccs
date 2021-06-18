@@ -1,6 +1,6 @@
-from compile import Compile
-from syntax.syntax_analysis import SyntaxAnalysis
-from lexical.lexical_analysis import LexicalAnalysis
+from ccs2.compile import Compile
+from ccs2.syntax.syntax_analysis import SyntaxAnalysis
+from ccs2.lexical.lexical_analysis import LexicalAnalysis
 import tests.test_utils as u
 import unittest
 
