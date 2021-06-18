@@ -5,15 +5,13 @@
 </p>
 
 
-## Installation
+## Installation and Usage
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install CCS.
 
 ```bash
 pip install ccs2
 ```
-
-## Usage
 
 ```python
 ccs2 <path_to_c_code>

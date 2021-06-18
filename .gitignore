@@ -133,6 +133,6 @@ dmypy.json
 
 # custom
 output/*
-!output/.gitkeep
+ccs2/output/*
 
 *.c
