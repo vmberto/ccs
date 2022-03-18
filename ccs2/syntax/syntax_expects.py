@@ -24,7 +24,7 @@ def expectNextToBeOperningCurlyBracket(s):
         raise SyntaxException('opening curly braces Expected', s.box['token'])
 
 def expectNumberOrIdentifier(s):
-    if (s.box['token'].type != Token.TK_IDENTIFIER and s.box['token'].type != Token.TK_INT and s.box['token'].type != Token.TK_FLOAT and s.box['token'].type != Token.TK_CHAR):
+    if (s.box['token'].type != Token.TK_IDENTIFIER and s.box['token'].type != Token.TK_INT and s.box['token'].type != Token.TK_FLOAT):
         raise SyntaxException('identifier or number Expected', s.box['token'])
 
 def expectArithmeticOperator(s):

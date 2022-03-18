@@ -36,7 +36,7 @@ class Compile:
                 log(e, 'error', testing)
 
         if (not testing): #pragma: no coverage
-            MYDIR = ("output")
+            MYDIR = ('output')
             CHECK_FOLDER = os.path.isdir(MYDIR)
             if not CHECK_FOLDER:
                 os.makedirs(MYDIR)

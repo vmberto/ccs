@@ -51,7 +51,10 @@ class BlockScopeParser:
         self.box['token'] = self.box['scanner'].getNextToken()
         if (not mainExecution and not self.box['token']):
             raise SyntaxException('unexpected end of file')
+        if (mainExecution and self.box['token'] is not None):
+            raise SyntaxException('unexpected token', self.box['token'])
         self.box['token'] = self.box['scanner'].getPreviousToken()
+
 
     def waitForClosingCurlyBracket(self):
         if (self.box['token'] is None):
@@ -209,7 +212,6 @@ class ConditionalExpressionParser:
         else:
             GenerateCode().writeLabel()
 
-
     def checkIfElseExists(self):
         self.box['token'] = self.box['scanner'].getNextToken()
         elseExists = self.box['token'].text == 'else'
@@ -238,7 +240,6 @@ class LoopParser:
         BlockScopeParser(self.box).execute()
 
         GenerateCode().writeLoop(expressionA, operator, expressionB)
-
 
     def isLoopStatement(self):
         return self.box['token'].text == 'while'
