@@ -19,4 +19,4 @@ class Symbol: # pragma: no coverage
         self.identifier = identifier
 
     def __repr__(self):
-        return 'Symbol [Type: ' + self.type + ' | Identificador: ' + self.identifier + ' | Initialized: ' + str(self.initialized) + ' | Scope: ' + str(self.scope) + ']'
+        return 'Symbol [Type: ' + self.type + ' | Identifier: ' + self.identifier + ' | Initialized: ' + str(self.initialized) + ' | Scope: ' + str(self.scope) + ']'
